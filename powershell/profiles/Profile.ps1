@@ -1,14 +1,16 @@
 <#
+REQUIREMENTS:
+Is located in $PsHome
+
+See this resource for details:
+https://devblogs.microsoft.com/scripting/understanding-the-six-powershell-profiles/
+
 This profile is going to get big and gross sooner than later.
 I should probably split up functions/aliases into another .ps1 and then import it as a module into this one.
 #>
-
 Clear-Host
+Import-Module -Name .\functions\functions.ps1
 
-function Test-Administrator {
-    $user = [Security.Principal.WindowsIdentity]::GetCurrent();
-    (New-Object Security.Principal.WindowsPrincipal $user).IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)
-}
 
 
 function prompt {

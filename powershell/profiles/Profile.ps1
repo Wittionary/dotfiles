@@ -9,7 +9,12 @@ This profile is going to get big and gross sooner than later.
 I should probably split up functions/aliases into another .ps1 and then import it as a module into this one.
 #>
 Clear-Host
-Import-Module -Name .\functions\functions.ps1
+try {
+    Import-Module -Name "$ENV:git\dotfiles\powershell\functions\functions.ps1"
+} catch {
+    Write-Error "Functions not imported. '`$ENV:git' is set as '$ENV:git'"
+}
+
 
 
 

@@ -26,3 +26,23 @@ function Get-ShortenedDirectory {
         return $Directory
     }
 }
+
+# Sync your current Domain Controller and then sync to Azure
+function Sync-ToAzure {
+    param(
+        # This may not always be the DC you're connect to in ADUC via MMC
+        $DomainController = (Get-ADDomainController).Hostname,
+
+        [Parameter(Mandatory=$true)]
+        $AzureSyncServer,
+
+        $PatienceInterval = 5
+    )
+
+    Write-Host "Syncing to $DomainController"
+    Invoke-Command $DomainController -ScriptBlock {repadmin /syncall}
+    Write-Host "Waiting for $PatienceInterval seconds"
+    Start-Sleep -s $PatienceInterval
+    # May need to Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass
+    Invoke-Command $AzureSyncServer -FilePath "\\$AzureSyncServer\D$\scripts\sync-adconnect.ps1"
+}

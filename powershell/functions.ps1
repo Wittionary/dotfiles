@@ -46,3 +46,20 @@ function Sync-ToAzure {
     # May need to Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass
     Invoke-Command $AzureSyncServer -FilePath "\\$AzureSyncServer\D$\scripts\sync-adconnect.ps1"
 }
+
+# Start a PSsession with the on-prem Exchange server
+function Connect-OnPremExchange {
+    param(
+        $ExchangeServerFQDN,
+
+        $PrivilegedCreds = (Get-Credential)
+    )
+    #$PrivilegedCreds = ConvertTo-SecureString $PrivilegedCreds
+    $OnPremExchangeSession = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri "http://$ExchangeServerFQDN/PowerShell/" -Authentication Kerberos -Credential $PrivilegedCreds
+    Import-PSSession $OnPremExchangeSession -DisableNameChecking
+}
+
+# End a PSsession with the on-prem Exchange server
+function Disconnect-OnPremExchange {
+    Remove-PSSession $OnPremExchangeSession
+}

@@ -10,7 +10,7 @@ I should probably split up functions/aliases into another .ps1 and then import i
 #>
 Clear-Host
 try {
-    Import-Module -Name "$ENV:git\dotfiles\powershell\functions\functions.ps1"
+    Import-Module -Name "$ENV:git\dotfiles\powershell\functions.ps1"
 } catch {
     Write-Error "Functions not imported. '`$ENV:git' is set as '$ENV:git'"
 }

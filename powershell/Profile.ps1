@@ -10,7 +10,7 @@ I should probably split up functions/aliases into another .ps1 and then import i
 #>
 Clear-Host
 try {
-    Import-Module -Name "$ENV:git\dotfiles\powershell\functions.ps1"
+    Import-Module -Name "$ENV:git\dotfiles\powershell\functions.ps1" -Force
 } catch {
     Write-Error "Functions not imported. '`$ENV:git' is set as '$ENV:git'"
 }
@@ -53,7 +53,7 @@ function prompt {
 
     # Filepath
     Write-Host " " -NoNewline -ForegroundColor $PromptBackgroundColor2 -BackgroundColor $PromptBackgroundColor3
-    Write-Host $($(Get-Location) -replace ($env:USERPROFILE).Replace('\', '\\'), "~") -NoNewline -ForegroundColor $PromptTextColor -BackgroundColor $PromptBackgroundColor3
+    Write-Host $($(Get-ShortenedDirectory) -replace ($env:USERPROFILE).Replace('\', '\\'), "~") -NoNewline -ForegroundColor $PromptTextColor -BackgroundColor $PromptBackgroundColor3
     Write-Host "`u{25B6}" -NoNewline -ForegroundColor $PromptBackgroundColor3 -BackgroundColor $PromptTextColor
 
     $global:LASTEXITCODE = $realLASTEXITCODE

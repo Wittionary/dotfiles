@@ -63,3 +63,16 @@ function Connect-OnPremExchange {
 function Disconnect-OnPremExchange {
     Remove-PSSession $OnPremExchangeSession
 }
+
+# Git aliases
+function g {
+    param (
+        [Parameter(Position=0)]
+        $CommandSequence = "s"
+    )
+    if ($CommandSequence -eq "s") {
+        & git status
+    } elseif ($CommandSequence -eq "b") {
+        & git branch --list
+    }
+}

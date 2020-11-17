@@ -71,8 +71,14 @@ function g {
         $CommandSequence = "s"
     )
     if ($CommandSequence -eq "s") {
-        & git status
+        & git status -sb
     } elseif ($CommandSequence -eq "b") {
         & git branch --list
+    } elseif ($CommandSequence -eq "p") {
+        & git pull
+    } elseif ($CommandSequence -eq "can") {
+        # Commit all now; maybe add auto-push later
+        & git commit .
+        & git commit -am "Commit All @ $(Get-Date -Format "MM-dd-yyyy HH:mm:ss")"
     }
 }

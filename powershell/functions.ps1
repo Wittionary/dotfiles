@@ -78,10 +78,10 @@ function g {
         & git pull
     } elseif ($CommandSequence -eq "can") {
         # Commit all now; maybe add auto-push later
-        & git commit .
+        & git add .
         $CommitMessage = "Commit All @ $(Get-Date -Format "MM-dd-yyyy HH:mm:ss")"
         & git commit -am $CommitMessage
-    } elseif ($CommandSequence -eq "p p") {
+    } elseif ($CommandSequence -eq "pp") {
         # Push
         & git push
     }

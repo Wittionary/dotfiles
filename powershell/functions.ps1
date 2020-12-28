@@ -8,7 +8,7 @@ function Test-Administrator {
 function Get-ShortenedDirectory {
     param(
         $Directory = (Get-Location).Path,
-        $TrailingFolderCount = 3
+        $TrailingFolderCount = 2
     )
 
     $SplitDirectory = ($Directory).Split("\")

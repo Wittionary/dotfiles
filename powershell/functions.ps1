@@ -18,8 +18,13 @@ function Get-ShortenedDirectory {
         for ($i = ($SplitDirectory.count - $TrailingFolderCount); $i -lt ($SplitDirectory.count); $i++) {
             $TrailingFolders += "\$($SplitDirectory[$i])"
         }
-    
-        $ShortenedDirectory = $SplitDirectory[0] + "\..." + $TrailingFolders 
+        
+        if ($SplitDirectory[0] -eq "C:"){
+            $ShortenedDirectory = "..." + $TrailingFolders
+        } else {
+            $ShortenedDirectory = $SplitDirectory[0] + "\..." + $TrailingFolders
+        }
+        
         return $ShortenedDirectory
     } else {
         # It's short enough already

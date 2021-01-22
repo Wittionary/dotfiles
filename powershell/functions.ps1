@@ -20,7 +20,7 @@ function Get-ShortenedDirectory {
         }
         
         if ($SplitDirectory[0] -eq "C:"){
-            $ShortenedDirectory = "..." + $TrailingFolders
+            $ShortenedDirectory = ".." + $TrailingFolders
         } else {
             $ShortenedDirectory = $SplitDirectory[0] + "\..." + $TrailingFolders
         }

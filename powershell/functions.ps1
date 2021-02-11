@@ -4,6 +4,34 @@ function Test-Administrator {
     (New-Object Security.Principal.WindowsPrincipal $user).IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)
 }
 
+# Return the git branch that's currently checked out, if any
+function Get-GitCheckedOutBranch {
+    $CheckedOutBranch = $null
+    $Branches = git branch --list
+    $CheckedOutBranch = $Branches | Where-Object { $_ -match "\*" }
+    # Get rid of asterisk
+    $CheckedOutBranch = $CheckedOutBranch.Remove(0, 2)
+
+    return $CheckedOutBranch
+}
+
+# Returns if the current working directory is a git repo or subdir of a repo
+function Test-IsGitRepo {
+    $SplitRepoPath = $pwd.Path.Split("\")
+
+    $AssembledPath = ""
+    foreach ($Folder in $SplitRepoPath) {
+        $AssembledPath += "$Folder\"
+        $GitFolder = Get-ChildItem -Path $AssembledPath -Hidden -Name ".git"
+
+        if ($GitFolder) {
+            return $true
+        }
+    }
+
+    return $false
+}
+
 # Returns a shortened version of the current working directory
 function Get-ShortenedDirectory {
     param(

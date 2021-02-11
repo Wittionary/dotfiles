@@ -42,7 +42,12 @@ function prompt {
     Write-Host " $ENV:USERNAME" -NoNewline -ForegroundColor $PromptTextColor -BackgroundColor $PromptBackgroundColor1
     # `u{2585} 
     Write-Host " " -NoNewline -ForegroundColor $PromptTextColor -BackgroundColor $PromptBackgroundColor2
-    Write-Host "$ENV:COMPUTERNAME" -NoNewline -ForegroundColor $PromptTextColor -BackgroundColor $PromptBackgroundColor2
+    if (Test-IsGitRepo) {
+        Write-Host "$(Get-GitCheckedOutBranch)" -NoNewline -ForegroundColor $PromptTextColor -BackgroundColor $PromptBackgroundColor2
+    } else {
+        Write-Host "$ENV:COMPUTERNAME" -NoNewline -ForegroundColor $PromptTextColor -BackgroundColor $PromptBackgroundColor2
+    }
+    
 
     # Color for PS sessions
     if ($null -ne $s) {

@@ -1,12 +1,11 @@
 <#
 REQUIREMENTS:
 Is located in $PsHome
+Environmental variable "git" is set to the path where you clone your git repos
+You've cloned the "dotfiles" repo into your git path
 
 See this resource for details:
 https://devblogs.microsoft.com/scripting/understanding-the-six-powershell-profiles/
-
-This profile is going to get big and gross sooner than later.
-I should probably split up functions/aliases into another .ps1 and then import it as a module into this one.
 #>
 Clear-Host
 try {

@@ -1,7 +1,7 @@
 <#
 REQUIREMENTS:
 Is located in $PsHome
-Environmental variable "git" is set to the path where you clone your git repos
+Environment variable "git" is set to the path where you clone your git repos
 You've cloned the "dotfiles" repo into your git path
 
 See this resource for details:
@@ -10,6 +10,7 @@ https://devblogs.microsoft.com/scripting/understanding-the-six-powershell-profil
 Clear-Host
 try {
     Import-Module -Name "$ENV:git\dotfiles\powershell\functions.ps1" -Force
+    Set-Location -Path $ENV:git
 } catch {
     Write-Error "Functions not imported. '`$ENV:git' is set as '$ENV:git'"
 }

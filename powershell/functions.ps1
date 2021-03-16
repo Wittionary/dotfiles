@@ -17,18 +17,10 @@ function Get-GitCheckedOutBranch {
 
 # Returns if the current working directory is a git repo or subdir of a repo
 function Test-IsGitRepo {
-    $SplitRepoPath = $pwd.Path.Split("\")
-
-    $AssembledPath = ""
-    foreach ($Folder in $SplitRepoPath) {
-        $AssembledPath += "$Folder\"
-        $GitFolder = Get-ChildItem -Path $AssembledPath -Hidden -Name ".git"
-
-        if ($GitFolder) {
-            return $true
-        }
+    # If in a child folder of $ENV:git, it *should* be a git repo
+    if ($pwd.path -match "$($env:git.Replace("\","\\"))\\") {
+        return $true
     }
-
     return $false
 }
 

@@ -132,3 +132,8 @@ function hdyg {
     $GifURL = "https://media.giphy.com/media/U1aN4HTfJ2SmgB2BBK/giphy.gif"
     $GifURL | Set-Clipboard
 }
+
+# Fix Windows Terminal elevation prompt bug
+function Fix-WindowsTerminal { # Using an unapproved verb; come at me, bro.
+    Add-AppxPackage -Register 'C:\Program Files\WindowsApps\Microsoft.WindowsTerminal_1.3.2651.0_x64__8wekyb3d8bbwe\AppxManifest.xml' -DisableDevelopmentMode
+}

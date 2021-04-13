@@ -21,15 +21,15 @@ try {
 function prompt {
     
     $realLASTEXITCODE = $LASTEXITCODE # This preserves our true lastexitcode
-    $Time = (Get-Date -Format HH:mm).ToString()
+    #$Time = (Get-Date -Format HH:mm).ToString()
     
     # Window Title
     if (Test-Administrator) {
         # Use different username if elevated
-        $Host.UI.RawUI.WindowTitle = "(Elevated) $Time"
+        $Host.UI.RawUI.WindowTitle = "(Elevated) $($(Get-ShortenedDirectory).split('\')[2])"
     }
     else {
-        $Host.UI.RawUI.WindowTitle = $Time
+        $Host.UI.RawUI.WindowTitle = Get-ShortenedDirectory
     }
     
 

@@ -138,3 +138,23 @@ function hdyg {
 function Fix-WindowsTerminal { # Using an unapproved verb; come at me, bro.
     Add-AppxPackage -Register 'C:\Program Files\WindowsApps\Microsoft.WindowsTerminal_1.3.2651.0_x64__8wekyb3d8bbwe\AppxManifest.xml' -DisableDevelopmentMode
 }
+
+# NATO alphabet
+function nato {
+    param (
+        [Parameter(Position=0)]
+        $Letter = "all"
+    )
+    $PhoneticAlphabet = @{a="alpha"; b="bravo"; c="charlie"; d="delta"; e="echo"; f="foxtrot";
+                g="golf"; h="hotel"; i="india"; j="juliett"; k="kilo"; l="lima";
+                m="mike"; n="november"; o="oscar"; p="papa"; q="quebec"; r="romeo";
+                s="sierra"; t="tango"; u="uniform"; v="victor"; w="whiskey"; x="x-ray";
+                y="yankee"; z="zulu"}
+
+    if ($Letter -ne "all") {
+        Write-Host $PhoneticAlphabet[$Letter]
+    } else {
+        $PhoneticAlphabet = $PhoneticAlphabet.GetEnumerator() | Sort-Object Name
+        $PhoneticAlphabet
+    }   
+}

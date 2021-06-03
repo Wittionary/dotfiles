@@ -143,7 +143,7 @@ function Fix-WindowsTerminal { # Using an unapproved verb; come at me, bro.
 function nato {
     param (
         [Parameter(Position=0)]
-        $Letter = "all"
+        $Word = ""
     )
     $PhoneticAlphabet = @{a="alpha"; b="bravo"; c="charlie"; d="delta"; e="echo"; f="foxtrot";
                 g="golf"; h="hotel"; i="india"; j="juliett"; k="kilo"; l="lima";
@@ -151,8 +151,11 @@ function nato {
                 s="sierra"; t="tango"; u="uniform"; v="victor"; w="whiskey"; x="x-ray";
                 y="yankee"; z="zulu"}
 
-    if ($Letter -ne "all") {
-        Write-Host $PhoneticAlphabet[$Letter]
+    if ($Word -ne "") {
+        $Letters = $Word.ToCharArray()
+        foreach ($Letter in $Letters) {
+            Write-Host $PhoneticAlphabet[$Letter.ToString()]
+        }
     } else {
         $PhoneticAlphabet = $PhoneticAlphabet.GetEnumerator() | Sort-Object Name
         $PhoneticAlphabet

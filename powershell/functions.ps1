@@ -15,6 +15,14 @@ function Get-GitCheckedOutBranch {
     return $CheckedOutBranch
 }
 
+# Return the number of local branches
+function Get-GitNumberOfBranches {
+    $Branches = git branch --list
+    $NumberOfBranches = $Branches.Count
+
+    return $NumberOfBranches
+}
+
 # Returns if the current working directory is a git repo or subdir of a repo
 function Test-IsGitRepo {
     # If in a child folder of $ENV:git, it *should* be a git repo
@@ -164,4 +172,16 @@ function nato {
         $PhoneticAlphabet = $PhoneticAlphabet.GetEnumerator() | Sort-Object Name
         $PhoneticAlphabet
     }   
+}
+
+# Return info about the last command ran for the prompt
+function Get-LastCommandInfo {
+    $Command = (Get-History -Count 1).CommandLine
+
+    if ($Command.Length -gt 15) {
+        $Command = $Command.Substring(0, 15)
+        $Command = "$Command..."
+    }
+
+    return $Command
 }

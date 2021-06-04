@@ -26,10 +26,10 @@ function prompt {
     # Window Title
     if (Test-Administrator) {
         # Use different username if elevated
-        $Host.UI.RawUI.WindowTitle = "(Elevated) $($(Get-ShortenedDirectory).split('\')[2])"
+        $Host.UI.RawUI.WindowTitle = "✨ $(Get-LastCommandInfo)"
     }
     else {
-        $Host.UI.RawUI.WindowTitle = Get-ShortenedDirectory
+        $Host.UI.RawUI.WindowTitle = Get-LastCommandInfo
     }
     
 
@@ -42,7 +42,9 @@ function prompt {
     Write-Host " $ENV:USERNAME" -NoNewline -ForegroundColor $PromptTextColor -BackgroundColor $PromptBackgroundColor1
     # `u{2585} 
     Write-Host " " -NoNewline -ForegroundColor $PromptTextColor -BackgroundColor $PromptBackgroundColor2
-    if (Test-IsGitRepo) {
+    if (Test-IsGitRepo -and (Get-GitNumberOfBranches -gt 1)) {
+        Write-Host "$(Get-GitCheckedOutBranch) ($(Get-GitNumberOfBranches))" -NoNewline -ForegroundColor $PromptTextColor -BackgroundColor $PromptBackgroundColor2
+    } elseif (Test-IsGitRepo) {
         Write-Host "$(Get-GitCheckedOutBranch)" -NoNewline -ForegroundColor $PromptTextColor -BackgroundColor $PromptBackgroundColor2
     } else {
         Write-Host "$ENV:COMPUTERNAME" -NoNewline -ForegroundColor $PromptTextColor -BackgroundColor $PromptBackgroundColor2

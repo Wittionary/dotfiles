@@ -42,10 +42,8 @@ function prompt {
     Write-Host " $ENV:USERNAME" -NoNewline -ForegroundColor $PromptTextColor -BackgroundColor $PromptBackgroundColor1
     # `u{2585} 
     Write-Host " " -NoNewline -ForegroundColor $PromptTextColor -BackgroundColor $PromptBackgroundColor2
-    if (Test-IsGitRepo -and (Get-GitNumberOfBranches -gt 1)) {
-        Write-Host "$(Get-GitCheckedOutBranch) ($(Get-GitNumberOfBranches))" -NoNewline -ForegroundColor $PromptTextColor -BackgroundColor $PromptBackgroundColor2
-    } elseif (Test-IsGitRepo) {
-        Write-Host "$(Get-GitCheckedOutBranch)" -NoNewline -ForegroundColor $PromptTextColor -BackgroundColor $PromptBackgroundColor2
+    if (Test-IsGitRepo) {
+        Write-Host "$(Get-GitCheckedOutBranch)($(Get-GitNumberOfBranches))" -NoNewline -ForegroundColor $PromptTextColor -BackgroundColor $PromptBackgroundColor2
     } else {
         Write-Host "$ENV:COMPUTERNAME" -NoNewline -ForegroundColor $PromptTextColor -BackgroundColor $PromptBackgroundColor2
     }

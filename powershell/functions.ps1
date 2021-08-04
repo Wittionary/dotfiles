@@ -131,7 +131,7 @@ function g {
         & git commit -am $CommitMessage
     } elseif ($CommandSequence -eq "pp") {
         # Push
-        & git push
+        & git push --progress
     }
 }
 

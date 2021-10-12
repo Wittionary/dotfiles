@@ -116,8 +116,12 @@ function ul {
 function g {
     param (
         [Parameter(Position=0)]
-        $CommandSequence = "s"
+        $CommandSequence = "s",
+
+        [Parameter(Position=1)]
+        $String = ""
     )
+    
     if ($CommandSequence -eq "s") {
         & git status -sb
     } elseif ($CommandSequence -eq "b") {
@@ -128,6 +132,11 @@ function g {
         # Commit all now; maybe add auto-push later
         & git add .
         $CommitMessage = "Commit All @ $(Get-Date -Format "MM-dd-yyyy HH:mm:ss")"
+        & git commit -am $CommitMessage
+    } elseif ($CommandSequence -eq "ca") {
+        # Commit all with message
+        & git add .
+        $CommitMessage = $String
         & git commit -am $CommitMessage
     } elseif ($CommandSequence -eq "pp") {
         # Push

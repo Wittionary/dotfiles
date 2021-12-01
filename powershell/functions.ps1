@@ -97,21 +97,6 @@ function Disconnect-OnPremExchange {
     Remove-PSSession $OnPremExchangeSession
 }
 
-# Unlock privileged account
-function ul {
-    param (
-        [Parameter(Position=0)]
-        $CommandSequence = "dc"
-    )
-    if ($CommandSequence -eq "dc") {
-        Get-ADUser pvl_dchristy | Unlock-ADAccount
-    } elseif ($CommandSequence -eq "lt") {
-        Get-ADUser pvl_ltomlin | Unlock-ADAccount
-    } elseif ($CommandSequence -eq "lm") {
-        Get-ADUser pvl_lmajors | Unlock-ADAccount
-    }
-}
-
 # Git aliases
 function g {
     param (
@@ -194,3 +179,6 @@ function Get-LastCommandInfo {
 
     return $Command
 }
+
+# Terraform alias
+New-Alias -Name "tf" -Value "terraform.exe"

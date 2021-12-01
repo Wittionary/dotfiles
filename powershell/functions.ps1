@@ -181,4 +181,4 @@ function Get-LastCommandInfo {
 }
 
 # Terraform alias
-New-Alias -Name "tf" -Value "terraform.exe"
+New-Alias -Name "tf" -Value "terraform.exe" -Description "Saves on 'terraform' keystrokes"

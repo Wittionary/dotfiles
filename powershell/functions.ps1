@@ -180,5 +180,55 @@ function Get-LastCommandInfo {
     return $Command
 }
 
+# Assumes 24-hour time format
+function Calculate-ElapsedTime {
+    param (
+        [Parameter(
+            Position = 0,
+            ValueFromPipeline = $true,
+            Mandatory = $true
+        )]
+        [string]
+        $RawSessions,
+
+        [Boolean]
+        $ReturnDatetimeObject = $false
+
+    )
+    $CumulativeTime = $null
+
+    # Split into multiple sessions depending on the delimiter
+    if (($RawSessions -match ",") -and ($RawSessions -match ";")) {
+        Write-Error "Delimiter unclear. Pick either comma or semi-colon."
+    } elseif ($RawSessions -match ",") {
+        $Sessions = ($RawSessions -split ",").Trim()
+    } elseif ($RawSessions -match ";") {
+        $Sessions = ($RawSessions -split ";").Trim()
+    } else {
+        # No delimiter found
+        $Sessions = $RawSessions.Trim()
+    }
+    
+    # Parse and add up each individual session
+    foreach ($Session in $Sessions) {
+        $Session = $Session.Trim()
+        $RawStartTime = $Session.Split("-")[0].Trim()
+        $RawEndTime = $Session.Split("-")[1].Trim()
+
+        $StartTime = Get-Date -Hour ($RawStartTime.Split(":")[0]) -Minute ($RawStartTime.Split(":")[1])
+        $EndTime = Get-Date -Hour ($RawEndTime.Split(":")[0]) -Minute ($RawEndTime.Split(":")[1])
+
+        $ElapsedSession = $EndTime - $StartTime
+        #Write-Host "Elapsed session: $ElapsedSession"
+        $CumulativeTime += $ElapsedSession
+    }
+
+    if ($ReturnDatetimeObject -eq $false) {
+        return "$($CumulativeTime.Days) days`n$($CumulativeTime.Hours) hours`n$($CumulativeTime.Minutes) minutes"
+    } else {
+        return $CumulativeTime
+    }
+}
+
 # Terraform alias
 New-Alias -Name "tf" -Value "terraform.exe" -Description "Saves on 'terraform' keystrokes"

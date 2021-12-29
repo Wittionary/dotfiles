@@ -219,12 +219,15 @@ function Calculate-ElapsedTime {
         $EndTime = Get-Date -Hour ($RawEndTime.Split(":")[0]) -Minute ($RawEndTime.Split(":")[1])
 
         $ElapsedSession = $EndTime - $StartTime
-        #Write-Host "Elapsed session: $ElapsedSession"
         $CumulativeTime += $ElapsedSession
     }
 
     if ($ReturnDatetimeObject -eq $false) {
-        return "$($CumulativeTime.Days) days`n$($CumulativeTime.Hours) hours`n$($CumulativeTime.Minutes) minutes"
+        if ($CumulativeTime.Days -eq 0) {
+            return "$($CumulativeTime.Hours) hours $($CumulativeTime.Minutes) minutes"
+        } else {
+            return "$($CumulativeTime.Days) days $($CumulativeTime.Hours) hours $($CumulativeTime.Minutes) minutes"
+        }
     } else {
         return $CumulativeTime
     }

@@ -233,5 +233,44 @@ function Calculate-ElapsedTime {
     }
 }
 
+# Calculate the elapsed time
+function Process-DailyNote {
+    param (
+        [ValidateScript({Test-Path $_, "Daily note not found at $_"})]
+        [String]
+        $TodaysDailyNotePath = "$env:git\obsidian-vaults\notey-notes\daily notes\$(Get-Date -Format yyyy-MM-dd) daily note.md"
+    )
+
+    # Import today's daily note automagically instead of piping in the data
+    if (!(Test-Path -Path "$env:git\obsidian-vaults\notey-notes\")) {
+        return "Obsidian vault not found."
+    }
+    $DailyNoteContent = Get-Content $TodaysDailyNotePath
+
+    # Only include lines with a checkbox
+    $DailyNoteContent = $DailyNoteContent | Where-Object {($_ -match "-\s\[\s\]") -or ($_ -match "-\s\[x\]")}
+    foreach ($Line in $DailyNoteContent) {
+        $WorkSessionExists = $false
+        # Get the raw sessions from each line and pass to Calculate-ElapsedTime
+        $Sections = $Line.Trim().Split(" ")
+        $RawSessions = ""
+        foreach ($Section in $Sections) {
+            # Does line have at least one session?
+            $WorkSessionExists = $Section -match "\d{1,2}:\d{1,2}\s?-\s?\d{1,2}:\d{1,2}"
+            #Write-Host "Section: $($Section)`nMatches: $($Matches)"
+            if ($WorkSessionExists) {
+                $RawSessions = "$RawSessions$Section"
+                #Write-Host "$Section -> $RawSessions"
+            }
+        }
+        if (($null -ne $RawSessions) -and ($RawSessions -ne "")) {
+            $ElapsedTime = Calculate-ElapsedTime -RawSessions $RawSessions -ReturnDatetimeObject $true
+            $Line = $Line.Replace("- [ ] ","")
+            $Line = $Line.Replace("- [x] ","")
+            Write-Host "$Line --> $($ElapsedTime.Hours) hours $($ElapsedTime.Minutes) minutes"
+        }
+    }
+}
+
 # Terraform alias
 New-Alias -Name "tf" -Value "terraform.exe" -Description "Saves on 'terraform' keystrokes"

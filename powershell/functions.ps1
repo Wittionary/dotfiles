@@ -289,6 +289,17 @@ function Process-DailyNote {
             # Does line have at least one session in "hh:mm-hh:mm" format or "h hour m minute" format
             $ClockFormat = $Section -match "\d{1,2}:\d{1,2}\s?-\s?\d{1,2}:\d{1,2}"
             $DurationFormat = $Section -match "\d{1,}\s?h([a-z\s]*\d{1,}\s?m[a-z]*)?"
+            # ^ Test data set for regex
+            <#
+            1h
+            1hour
+            1 hour
+            1 h 35 m
+            1h35m
+            1hr35min
+            1 hr 35 min
+            1 hour 35 minutes
+            #>
             $WorkSessionExists = $ClockFormat -or $DurationFormat
             #Write-Host "Section: $($Section)`nMatches: $($Matches)"
             if ($WorkSessionExists) {

@@ -185,7 +185,7 @@ function Get-LastCommandInfo {
 }
 
 # Assumes 24-hour time format
-function Calculate-ElapsedTime {
+function Calculate-TimeElapsed {
     param (
         [Parameter(
             Position = 0,
@@ -237,7 +237,34 @@ function Calculate-ElapsedTime {
     }
 }
 
-# Calculate the elapsed time
+# Extract time duration from string
+function Calculate-TimeDuration {
+    param (
+        [Parameter(
+            Position = 0,
+            ValueFromPipeline = $true,
+            Mandatory = $true
+        )]
+        [string]
+        $RawSession
+    )
+    $Hours = 0
+    $Minutes = 0
+
+    # Should be receiving it all as one string (e.g. 1hr; 35m; 1h47m)
+    # Start out supporting only hours and minutes
+    if ($RawSession -match "\d{1,}\s?h") {
+        [int]$Hours = $Matches.Values.Split(" ")[0]
+    }
+    if ($RawSession -match "\d{1,}\s?m") {
+        [int]$Minutes = $Matches.Values.Split(" ")[0]
+    }
+
+    $TimeDuration = New-TimeSpan -Hours $Hours -Minutes $Minutes
+    return $TimeDuration
+}
+
+# Turn recorded daily note work sessions into sums of time per task/project
 function Process-DailyNote {
     param (
         [ValidateScript({Test-Path $_, "Daily note not found at $_"})]
@@ -255,12 +282,14 @@ function Process-DailyNote {
     $DailyNoteContent = $DailyNoteContent | Where-Object {($_ -match "-\s\[\s\]") -or ($_ -match "-\s\[x\]")}
     foreach ($Line in $DailyNoteContent) {
         $WorkSessionExists = $false
-        # Get the raw sessions from each line and pass to Calculate-ElapsedTime
+        # Get the raw sessions from each line and pass to Calculate-TimeElapsed
         $Sections = $Line.Trim().Split(" ")
         $RawSessions = ""
         foreach ($Section in $Sections) {
-            # Does line have at least one session?
-            $WorkSessionExists = $Section -match "\d{1,2}:\d{1,2}\s?-\s?\d{1,2}:\d{1,2}"
+            # Does line have at least one session in "hh:mm-hh:mm" format or "h hour m minute" format
+            $ClockFormat = $Section -match "\d{1,2}:\d{1,2}\s?-\s?\d{1,2}:\d{1,2}"
+            $DurationFormat = $Section -match "\d{1,}\s?h([a-z\s]*\d{1,}\s?m[a-z]*)?"
+            $WorkSessionExists = $ClockFormat -or $DurationFormat
             #Write-Host "Section: $($Section)`nMatches: $($Matches)"
             if ($WorkSessionExists) {
                 $RawSessions = "$RawSessions$Section"
@@ -268,7 +297,7 @@ function Process-DailyNote {
             }
         }
         if (($null -ne $RawSessions) -and ($RawSessions -ne "")) {
-            $ElapsedTime = Calculate-ElapsedTime -RawSessions $RawSessions -ReturnDatetimeObject $true
+            $ElapsedTime = Calculate-TimeElapsed -RawSessions $RawSessions -ReturnDatetimeObject $true
             $Line = $Line.Replace("- [ ] ","")
             $Line = $Line.Replace("- [x] ","")
             Write-Host "$Line --> $($ElapsedTime.Hours) hours $($ElapsedTime.Minutes) minutes"

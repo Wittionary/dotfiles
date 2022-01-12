@@ -311,7 +311,8 @@ function Process-DailyNote {
             $ElapsedTime = Calculate-TimeElapsed -RawSessions $RawSessions -ReturnDatetimeObject $true
             $Line = $Line.Replace("- [ ] ","")
             $Line = $Line.Replace("- [x] ","")
-            Write-Host "$Line --> $($ElapsedTime.Hours) hours $($ElapsedTime.Minutes) minutes"
+            Write-Host "$Line --> " -NoNewline
+            Write-Host "$($ElapsedTime.Hours) hours $($ElapsedTime.Minutes) minutes" -ForegroundColor Green
         }
     }
 }

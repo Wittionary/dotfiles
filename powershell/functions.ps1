@@ -309,10 +309,18 @@ function Process-DailyNote {
         }
         if (($null -ne $RawSessions) -and ($RawSessions -ne "")) {
             $ElapsedTime = Calculate-TimeElapsed -RawSessions $RawSessions -ReturnDatetimeObject $true
+            $ForegroundColor = "White"
+
+            # If a time has already been registered as entered, add a visual indicator that's the case
+            if ($Line.Replace("- [ ] ","")) {
+                $ForegroundColor = "Green"
+            } elseif ($Line.Replace("- [x] ","")) {
+                $ForegroundColor = "Yellow"
+            }
             $Line = $Line.Replace("- [ ] ","")
             $Line = $Line.Replace("- [x] ","")
             Write-Host "$Line --> " -NoNewline
-            Write-Host "$($ElapsedTime.Hours) hours $($ElapsedTime.Minutes) minutes" -ForegroundColor Green
+            Write-Host "$($ElapsedTime.Hours) hours $($ElapsedTime.Minutes) minutes" -ForegroundColor $ForegroundColor
         }
     }
 }

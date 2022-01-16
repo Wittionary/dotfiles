@@ -127,6 +127,12 @@ function g {
         & git add .
         $CommitMessage = $String
         & git commit -am $CommitMessage
+    } elseif ($CommandSequence -eq "cu") {
+        # Undo that last commit
+        Write-Host "StackOverflow link is in clipboard" -ForegroundColor Yellow
+        Set-Clipboard "https://stackoverflow.com/questions/927358/how-do-i-undo-the-most-recent-local-commits-in-git"
+        #Write-Host "git commit 'undo'" -ForegroundColor Blue
+        #& git reset HEAD~1
     } elseif ($CommandSequence -eq "pp") {
         # Push
         & git push --progress

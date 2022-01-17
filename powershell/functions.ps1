@@ -1,69 +1,3 @@
-# For smart insert section
-using namespace System.Management.Automation
-using namespace System.Management.Automation.Language
-
-# Returns if current user is running the shell with elevated permissions
-function Test-Administrator {
-    $user = [Security.Principal.WindowsIdentity]::GetCurrent();
-    (New-Object Security.Principal.WindowsPrincipal $user).IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)
-}
-
-# Return the git branch that's currently checked out, if any
-function Get-GitCheckedOutBranch {
-    $CheckedOutBranch = $null
-    $Branches = git branch --list
-    $CheckedOutBranch = $Branches | Where-Object { $_ -match "\*" }
-    # Get rid of asterisk
-    $CheckedOutBranch = $CheckedOutBranch.Remove(0, 2)
-
-    return $CheckedOutBranch
-}
-
-# Return the number of local branches
-function Get-GitNumberOfBranches {
-    $Branches = git branch --list
-    $NumberOfBranches = $Branches.Count
-
-    return $NumberOfBranches
-}
-
-# Returns if the current working directory is a git repo or subdir of a repo
-function Test-IsGitRepo {
-    # If in a child folder of $ENV:git, it *should* be a git repo
-    if ($pwd.path -match "$($env:git.Replace("\","\\"))\\") {
-        return $true
-    }
-    return $false
-}
-
-# Returns a shortened version of the current working directory
-function Get-ShortenedDirectory {
-    param(
-        $Directory = (Get-Location).Path,
-        $TrailingFolderCount = 2
-    )
-
-    $SplitDirectory = ($Directory).Split("\")
-
-    # If the path is long, shorten it
-    if ($SplitDirectory.Count -gt ($TrailingFolderCount + 1)) {
-        for ($i = ($SplitDirectory.count - $TrailingFolderCount); $i -lt ($SplitDirectory.count); $i++) {
-            $TrailingFolders += "\$($SplitDirectory[$i])"
-        }
-        
-        if ($SplitDirectory[0] -eq "C:"){
-            $ShortenedDirectory = ".." + $TrailingFolders
-        } else {
-            $ShortenedDirectory = $SplitDirectory[0] + "\..." + $TrailingFolders
-        }
-        
-        return $ShortenedDirectory
-    } else {
-        # It's short enough already
-        return $Directory
-    }
-}
-
 # Sync your current Domain Controller and then sync to Azure
 function Sync-ToAzure {
     param(
@@ -101,43 +35,7 @@ function Disconnect-OnPremExchange {
     Remove-PSSession $OnPremExchangeSession
 }
 
-# Git aliases
-function g {
-    param (
-        [Parameter(Position=0)]
-        $CommandSequence = "s",
 
-        [Parameter(Position=1)]
-        $String = ""
-    )
-    
-    if ($CommandSequence -eq "s") {
-        & git status -sb
-    } elseif ($CommandSequence -eq "b") {
-        & git branch --list
-    } elseif ($CommandSequence -eq "p") {
-        & git pull
-    } elseif ($CommandSequence -eq "can") {
-        # Commit all now; maybe add auto-push later
-        & git add .
-        $CommitMessage = "Commit All @ $(Get-Date -Format "MM-dd-yyyy HH:mm:ss")"
-        & git commit -am $CommitMessage
-    } elseif ($CommandSequence -eq "ca") {
-        # Commit all with message
-        & git add .
-        $CommitMessage = $String
-        & git commit -am $CommitMessage
-    } elseif ($CommandSequence -eq "cu") {
-        # Undo that last commit
-        Write-Host "StackOverflow link is in clipboard" -ForegroundColor Yellow
-        Set-Clipboard "https://stackoverflow.com/questions/927358/how-do-i-undo-the-most-recent-local-commits-in-git"
-        #Write-Host "git commit 'undo'" -ForegroundColor Blue
-        #& git reset HEAD~1
-    } elseif ($CommandSequence -eq "pp") {
-        # Push
-        & git push --progress
-    }
-}
 
 # How Dare You gif
 function hdyg {
@@ -149,33 +47,6 @@ function hdyg {
 # Source: https://github.com/microsoft/terminal/issues/4217#issuecomment-712545620
 function Fix-WindowsTerminal { # Using an unapproved verb; come at me, bro.
     Add-AppxPackage -Register 'C:\Program Files\WindowsApps\Microsoft.WindowsTerminal_1.3.2651.0_x64__8wekyb3d8bbwe\AppxManifest.xml' -DisableDevelopmentMode
-}
-
-# NATO alphabet
-function nato {
-    param (
-        [Parameter(
-            Position = 0,
-            ValueFromPipeline = $true
-        )]
-        $Word = ""
-    )
-    $PhoneticAlphabet = @{a="alpha"; b="bravo"; c="charlie"; d="delta"; e="echo"; f="foxtrot";
-                g="golf"; h="hotel"; i="india"; j="juliett"; k="kilo"; l="lima";
-                m="mike"; n="november"; o="oscar"; p="papa"; q="quebec"; r="romeo";
-                s="sierra"; t="tango"; u="uniform"; v="victor"; w="whiskey"; x="x-ray";
-                y="yankee"; z="zulu"; '0'="zero"; '1'="wun"; '2'="too"; '3'="tree"; '4'="fow-er"; '5'="fife";
-                '6'="six"; '7'="sev-en"; '8'="ait"; '9'="nin-er"; '.'="decimal"; '-'="dash"}
-
-    if ($Word -ne "") {
-        $Letters = $Word.ToCharArray()
-        foreach ($Letter in $Letters) {
-            Write-Host $PhoneticAlphabet[$($Letter.ToString())]
-        }
-    } else {
-        $PhoneticAlphabet = $PhoneticAlphabet.GetEnumerator() | Sort-Object Name
-        $PhoneticAlphabet
-    }   
 }
 
 # Return info about the last command ran for the prompt
@@ -222,6 +93,10 @@ function Calculate-TimeElapsed {
     # Parse and add up each individual session
     foreach ($Session in $Sessions) {
         $Session = $Session.Trim()
+        # When there's a trailing delimiter, don't throw an error. Just ignore that empty "session"
+        if ($null -eq $Session -or $Session -eq "") {
+            break
+        }
         $RawStartTime = $Session.Split("-")[0].Trim()
         $RawEndTime = $Session.Split("-")[1].Trim()
 
@@ -318,13 +193,14 @@ function Process-DailyNote {
             $ForegroundColor = "White"
 
             # If a time has already been registered as entered, add a visual indicator that's the case
-            if ($Line.Replace("- [ ] ","")) {
+            if ($Line -match "-\s\[\s\]") {
+                $Line = $Line.Replace("- [ ] ","")
                 $ForegroundColor = "Green"
-            } elseif ($Line.Replace("- [x] ","")) {
+            } elseif ($Line -match "-\s\[x\]") {
+                $Line = $Line.Replace("- [x] ","")
                 $ForegroundColor = "Yellow"
             }
-            $Line = $Line.Replace("- [ ] ","")
-            $Line = $Line.Replace("- [x] ","")
+
             Write-Host "$Line --> " -NoNewline
             Write-Host "$($ElapsedTime.Hours) hours $($ElapsedTime.Minutes) minutes" -ForegroundColor $ForegroundColor
         }
@@ -356,196 +232,3 @@ function tail {
 }
 
 
-# Smart Insert/Delete
-# "The next four key handlers are designed to make entering matched quotes
-# parens, and braces a nicer experience.  I'd like to include functions
-# in the module that do this, but this implementation still isn't as smart
-# as ReSharper, so I'm just providing it as a sample."
-# Source: https://github.com/PowerShell/PSReadLine/blob/master/PSReadLine/SamplePSReadLineProfile.ps1?WT.mc_id=-blog-scottha
-Set-PSReadLineKeyHandler -Key '"',"'" `
-                         -BriefDescription SmartInsertQuote `
-                         -LongDescription "Insert paired quotes if not already on a quote" `
-                         -ScriptBlock {
-    param($key, $arg)
-
-    $quote = $key.KeyChar
-
-    $selectionStart = $null
-    $selectionLength = $null
-    [Microsoft.PowerShell.PSConsoleReadLine]::GetSelectionState([ref]$selectionStart, [ref]$selectionLength)
-
-    $line = $null
-    $cursor = $null
-    [Microsoft.PowerShell.PSConsoleReadLine]::GetBufferState([ref]$line, [ref]$cursor)
-
-    # If text is selected, just quote it without any smarts
-    if ($selectionStart -ne -1)
-    {
-        [Microsoft.PowerShell.PSConsoleReadLine]::Replace($selectionStart, $selectionLength, $quote + $line.SubString($selectionStart, $selectionLength) + $quote)
-        [Microsoft.PowerShell.PSConsoleReadLine]::SetCursorPosition($selectionStart + $selectionLength + 2)
-        return
-    }
-
-    $ast = $null
-    $tokens = $null
-    $parseErrors = $null
-    [Microsoft.PowerShell.PSConsoleReadLine]::GetBufferState([ref]$ast, [ref]$tokens, [ref]$parseErrors, [ref]$null)
-
-    function FindToken
-    {
-        param($tokens, $cursor)
-
-        foreach ($token in $tokens)
-        {
-            if ($cursor -lt $token.Extent.StartOffset) { continue }
-            if ($cursor -lt $token.Extent.EndOffset) {
-                $result = $token
-                $token = $token -as [StringExpandableToken]
-                if ($token) {
-                    $nested = FindToken $token.NestedTokens $cursor
-                    if ($nested) { $result = $nested }
-                }
-
-                return $result
-            }
-        }
-        return $null
-    }
-
-    $token = FindToken $tokens $cursor
-
-    # If we're on or inside a **quoted** string token (so not generic), we need to be smarter
-    if ($token -is [StringToken] -and $token.Kind -ne [TokenKind]::Generic) {
-        # If we're at the start of the string, assume we're inserting a new string
-        if ($token.Extent.StartOffset -eq $cursor) {
-            [Microsoft.PowerShell.PSConsoleReadLine]::Insert("$quote$quote ")
-            [Microsoft.PowerShell.PSConsoleReadLine]::SetCursorPosition($cursor + 1)
-            return
-        }
-
-        # If we're at the end of the string, move over the closing quote if present.
-        if ($token.Extent.EndOffset -eq ($cursor + 1) -and $line[$cursor] -eq $quote) {
-            [Microsoft.PowerShell.PSConsoleReadLine]::SetCursorPosition($cursor + 1)
-            return
-        }
-    }
-
-    if ($null -eq $token -or
-        $token.Kind -eq [TokenKind]::RParen -or $token.Kind -eq [TokenKind]::RCurly -or $token.Kind -eq [TokenKind]::RBracket) {
-        if ($line[0..$cursor].Where{$_ -eq $quote}.Count % 2 -eq 1) {
-            # Odd number of quotes before the cursor, insert a single quote
-            [Microsoft.PowerShell.PSConsoleReadLine]::Insert($quote)
-        }
-        else {
-            # Insert matching quotes, move cursor to be in between the quotes
-            [Microsoft.PowerShell.PSConsoleReadLine]::Insert("$quote$quote")
-            [Microsoft.PowerShell.PSConsoleReadLine]::SetCursorPosition($cursor + 1)
-        }
-        return
-    }
-
-    # If cursor is at the start of a token, enclose it in quotes.
-    if ($token.Extent.StartOffset -eq $cursor) {
-        if ($token.Kind -eq [TokenKind]::Generic -or $token.Kind -eq [TokenKind]::Identifier -or 
-            $token.Kind -eq [TokenKind]::Variable -or $token.TokenFlags.hasFlag([TokenFlags]::Keyword)) {
-            $end = $token.Extent.EndOffset
-            $len = $end - $cursor
-            [Microsoft.PowerShell.PSConsoleReadLine]::Replace($cursor, $len, $quote + $line.SubString($cursor, $len) + $quote)
-            [Microsoft.PowerShell.PSConsoleReadLine]::SetCursorPosition($end + 2)
-            return
-        }
-    }
-
-    # We failed to be smart, so just insert a single quote
-    [Microsoft.PowerShell.PSConsoleReadLine]::Insert($quote)
-}
-
-Set-PSReadLineKeyHandler -Key '(','{','[' `
-                         -BriefDescription InsertPairedBraces `
-                         -LongDescription "Insert matching braces" `
-                         -ScriptBlock {
-    param($key, $arg)
-
-    $closeChar = switch ($key.KeyChar)
-    {
-        <#case#> '(' { [char]')'; break }
-        <#case#> '{' { [char]'}'; break }
-        <#case#> '[' { [char]']'; break }
-    }
-
-    $selectionStart = $null
-    $selectionLength = $null
-    [Microsoft.PowerShell.PSConsoleReadLine]::GetSelectionState([ref]$selectionStart, [ref]$selectionLength)
-
-    $line = $null
-    $cursor = $null
-    [Microsoft.PowerShell.PSConsoleReadLine]::GetBufferState([ref]$line, [ref]$cursor)
-    
-    if ($selectionStart -ne -1)
-    {
-      # Text is selected, wrap it in brackets
-      [Microsoft.PowerShell.PSConsoleReadLine]::Replace($selectionStart, $selectionLength, $key.KeyChar + $line.SubString($selectionStart, $selectionLength) + $closeChar)
-      [Microsoft.PowerShell.PSConsoleReadLine]::SetCursorPosition($selectionStart + $selectionLength + 2)
-    } else {
-      # No text is selected, insert a pair
-      [Microsoft.PowerShell.PSConsoleReadLine]::Insert("$($key.KeyChar)$closeChar")
-      [Microsoft.PowerShell.PSConsoleReadLine]::SetCursorPosition($cursor + 1)
-    }
-}
-
-Set-PSReadLineKeyHandler -Key ')',']','}' `
-                         -BriefDescription SmartCloseBraces `
-                         -LongDescription "Insert closing brace or skip" `
-                         -ScriptBlock {
-    param($key, $arg)
-
-    $line = $null
-    $cursor = $null
-    [Microsoft.PowerShell.PSConsoleReadLine]::GetBufferState([ref]$line, [ref]$cursor)
-
-    if ($line[$cursor] -eq $key.KeyChar)
-    {
-        [Microsoft.PowerShell.PSConsoleReadLine]::SetCursorPosition($cursor + 1)
-    }
-    else
-    {
-        [Microsoft.PowerShell.PSConsoleReadLine]::Insert("$($key.KeyChar)")
-    }
-}
-
-Set-PSReadLineKeyHandler -Key Backspace `
-                         -BriefDescription SmartBackspace `
-                         -LongDescription "Delete previous character or matching quotes/parens/braces" `
-                         -ScriptBlock {
-    param($key, $arg)
-
-    $line = $null
-    $cursor = $null
-    [Microsoft.PowerShell.PSConsoleReadLine]::GetBufferState([ref]$line, [ref]$cursor)
-
-    if ($cursor -gt 0)
-    {
-        $toMatch = $null
-        if ($cursor -lt $line.Length)
-        {
-            switch ($line[$cursor])
-            {
-                <#case#> '"' { $toMatch = '"'; break }
-                <#case#> "'" { $toMatch = "'"; break }
-                <#case#> ')' { $toMatch = '('; break }
-                <#case#> ']' { $toMatch = '['; break }
-                <#case#> '}' { $toMatch = '{'; break }
-            }
-        }
-
-        if ($toMatch -ne $null -and $line[$cursor-1] -eq $toMatch)
-        {
-            [Microsoft.PowerShell.PSConsoleReadLine]::Delete($cursor - 1, 2)
-        }
-        else
-        {
-            [Microsoft.PowerShell.PSConsoleReadLine]::BackwardDeleteChar($key, $arg)
-        }
-    }
-}
-#endregion Smart Insert/Delete

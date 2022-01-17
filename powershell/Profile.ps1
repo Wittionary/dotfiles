@@ -9,7 +9,10 @@ https://devblogs.microsoft.com/scripting/understanding-the-six-powershell-profil
 #>
 Clear-Host
 try {
-    Import-Module -Name "$ENV:git\dotfiles\powershell\functions.ps1" -Force
+    $Functions = Get-ChildItem -Path "$ENV:git\dotfiles\powershell\*.ps1" | Where-Object {$_.Name -ne "Profile.ps1"}
+    foreach ($Function in $Functions) {
+        Import-Module -Name $Function.FullName -Force
+    }
     Set-Location -Path $ENV:git
 } catch {
     Write-Error "Functions not imported. '`$ENV:git' is set as '$ENV:git'"

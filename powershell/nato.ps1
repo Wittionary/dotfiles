@@ -17,11 +17,18 @@ function nato {
 
     if ($Word -ne "") {
         $Letters = $Word.ToCharArray()
+
         foreach ($Letter in $Letters) {
-            Write-Host $PhoneticAlphabet[$($Letter.ToString())]
+            # Alternate coloring per line for improved readability
+            if ($Letters.IndexOf($Letter) % 2 -eq 0) {
+                $Color = "White"
+            } else {
+                $Color = "Blue"
+            }
+            Write-Host $PhoneticAlphabet[$($Letter.ToString())] -ForegroundColor $Color
         }
     } else {
         $PhoneticAlphabet = $PhoneticAlphabet.GetEnumerator() | Sort-Object Name
-        $PhoneticAlphabet
+        $PhoneticAlphabet | Out-Host -Paging
     }   
 }

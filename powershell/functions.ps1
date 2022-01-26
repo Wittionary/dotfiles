@@ -1,23 +1,3 @@
-# Sync your current Domain Controller and then sync to Azure
-function Sync-ToAzure {
-    param(
-        # This may not always be the DC you're connect to in ADUC via MMC
-        $DomainController = (Get-ADDomainController).Hostname,
-
-        [Parameter(Mandatory=$true)]
-        $AzureSyncServer,
-
-        $PatienceInterval = 5
-    )
-
-    Write-Host "Syncing to $DomainController"
-    Invoke-Command $DomainController -ScriptBlock {repadmin /syncall}
-    Write-Host "Waiting for $PatienceInterval seconds"
-    Start-Sleep -s $PatienceInterval
-    # May need to Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Bypass
-    Invoke-Command $AzureSyncServer -FilePath "\\$AzureSyncServer\D$\scripts\sync-adconnect.ps1"
-}
-
 # Start a PSsession with the on-prem Exchange server
 function Connect-OnPremExchange {
     param(
@@ -209,26 +189,6 @@ function Process-DailyNote {
 
 # Terraform alias
 New-Alias -Name "tf" -Value "terraform.exe" -Description "Saves on 'terraform' keystrokes"
-# Tail alias
-function tail {
-    param (
-        [ValidateScript({Test-Path $_, "File not found at $_"})]
-        [Parameter(
-            Mandatory=$true,
-            Position = 0,
-            ValueFromPipeline = $true
-        )]
-        [String]
-        $Path,
 
-        [Parameter(
-            Position = 1
-        )]
-        [Int32]
-        $Count = 10
-    )
-    
-    Get-Content -Path $Path -Tail $Count
-}
 
 

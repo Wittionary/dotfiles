@@ -8,6 +8,18 @@ See this resource for details:
 https://devblogs.microsoft.com/scripting/understanding-the-six-powershell-profiles/
 #>
 Clear-Host
+# https://textkool.com/en/ascii-art-generator?hl=default&vl=default&font=Basic&text=dotfiles
+# DOTFILES
+$Toast = "
+d8888b.  .d88b.  d888888b d88888b d888888b db      d88888b .d8888. 
+88  ``8D .8P  Y8. ``~~88~~`` 88'       ``88'   88      88'     88'  YP 
+88   88 88    88    88    88ooo      88    88      88ooooo ``8bo.   
+88   88 88    88    88    88~~~      88    88      88~~~~~   ``Y8b.    
+88  .8D ``8b  d8'    88    88        .88.   88booo. 88.     db   8D  
+Y8888D'  ``Y88P'     YP    YP      Y888888P Y88888P Y88888P ``8888Y'                                                                    
+"
+Write-Host $Toast
+
 try {
     $Functions = Get-ChildItem -Path "$ENV:git\dotfiles\powershell\*.ps1" | Where-Object {$_.Name -ne "Profile.ps1"}
     foreach ($Function in $Functions) {
@@ -16,57 +28,4 @@ try {
     Set-Location -Path $ENV:git
 } catch {
     Write-Error "Functions not imported. '`$ENV:git' is set as '$ENV:git'"
-}
-
-# Prompt coloring
-$PromptTextColor = "Black"
-$PromptBackgroundColor1 = "Yellow"
-$PromptBackgroundColor2 = "Magenta"
-$PromptBackgroundColor3 = "Blue"
-$Section1 = @{NoNewLine = $true; ForegroundColor = $PromptTextColor; BackgroundColor = $PromptBackgroundColor1}
-$Section2 = @{NoNewLine = $true; ForegroundColor = $PromptTextColor; BackgroundColor = $PromptBackgroundColor2}
-$Section3 = @{NoNewLine = $true; ForegroundColor = $PromptTextColor; BackgroundColor = $PromptBackgroundColor3}
-$Section4 = @{NoNewLine = $true; ForegroundColor = $PromptBackgroundColor3; BackgroundColor = $PromptTextColor}
-
-function prompt {
-    
-    $realLASTEXITCODE = $LASTEXITCODE # This preserves our true lastexitcode
-    $Time = (Get-Date -Format HH:mm).ToString()
-    
-    # Window Title
-    if (Test-Administrator) {
-        # Use different username if elevated
-        $Host.UI.RawUI.WindowTitle = "✨ $(Get-LastCommandInfo)"
-    }
-    else {
-        $Host.UI.RawUI.WindowTitle = Get-LastCommandInfo
-    }
-    
-
-    # Username and hostname OR time and git branch
-
-    if (Test-IsGitRepo) {
-        Write-Host " $Time" @Section1
-        Write-Host " $(Get-GitCheckedOutBranch)($(Get-GitNumberOfBranches))" @Section2
-    } else {
-        Write-Host " $ENV:USERNAME" @Section1
-        Write-Host " $ENV:COMPUTERNAME" @Section2
-    }
-    
-
-    # Color for PS sessions
-    if ($null -ne $s) {
-        Write-Host " (`$s: " -NoNewline -ForegroundColor DarkGray
-        Write-Host "$($s.Name)" -NoNewline -ForegroundColor Yellow
-        Write-Host ") " -NoNewline -ForegroundColor DarkGray
-    }
-
-    # Filepath
-    Write-Host " " @Section3
-    Write-Host $($(Get-ShortenedDirectory) -replace ($env:USERPROFILE).Replace('\', '\\'), "~") @Section3
-    Write-Host "`u{25B6}" @Section4
-
-    $global:LASTEXITCODE = $realLASTEXITCODE
-
-    return " "
 }

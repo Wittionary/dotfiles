@@ -33,3 +33,15 @@ function Get-ShortenedDirectory {
         return $Directory
     }
 }
+
+# Return info about the last command ran for the prompt
+function Get-LastCommandInfo {
+    $Command = (Get-History -Count 1).CommandLine
+
+    if ($Command.Length -gt 20) {
+        $Command = $Command.Substring(0, 20)
+        $Command = "$Command..."
+    }
+
+    return $Command
+}

@@ -1,4 +1,7 @@
-# Tail alias
+# Simulates 'tail' usage like in linux.
+# Examples:
+# tail output.log
+# cat output.log | tail 7
 function tail {
     param (
         [ValidateScript({Test-Path $_, "File not found at $_"})]

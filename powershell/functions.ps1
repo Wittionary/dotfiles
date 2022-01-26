@@ -23,11 +23,7 @@ function hdyg {
     $GifURL | Set-Clipboard
 }
 
-# Fix Windows Terminal elevation prompt bug
-# Source: https://github.com/microsoft/terminal/issues/4217#issuecomment-712545620
-function Fix-WindowsTerminal { # Using an unapproved verb; come at me, bro.
-    Add-AppxPackage -Register 'C:\Program Files\WindowsApps\Microsoft.WindowsTerminal_1.3.2651.0_x64__8wekyb3d8bbwe\AppxManifest.xml' -DisableDevelopmentMode
-}
+
 
 # Return info about the last command ran for the prompt
 function Get-LastCommandInfo {
@@ -128,16 +124,19 @@ function Calculate-TimeDuration {
 # Turn recorded daily note work sessions into sums of time per task/project
 function Process-DailyNote {
     param (
+        [datetime]
+        $Date = $(Get-Date),
+
         [ValidateScript({Test-Path $_, "Daily note not found at $_"})]
         [String]
-        $TodaysDailyNotePath = "$env:git\obsidian-vaults\notey-notes\daily notes\$(Get-Date -Format yyyy-MM-dd) daily note.md"
+        $DailyNotePath = "$env:git\obsidian-vaults\notey-notes\daily notes\$($Date | Get-Date -Format yyyy-MM-dd) daily note.md"
     )
 
     # Import today's daily note automagically instead of piping in the data
     if (!(Test-Path -Path "$env:git\obsidian-vaults\notey-notes\")) {
         return "Obsidian vault not found."
     }
-    $DailyNoteContent = Get-Content $TodaysDailyNotePath
+    $DailyNoteContent = Get-Content $DailyNotePath
 
     # Only include lines with a checkbox
     $DailyNoteContent = $DailyNoteContent | Where-Object {($_ -match "-\s\[\s\]") -or ($_ -match "-\s\[x\]")}
@@ -186,9 +185,3 @@ function Process-DailyNote {
         }
     }
 }
-
-# Terraform alias
-New-Alias -Name "tf" -Value "terraform.exe" -Description "Saves on 'terraform' keystrokes"
-
-
-

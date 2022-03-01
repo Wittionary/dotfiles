@@ -8,12 +8,14 @@ function obsidian-backup {
     
     $WorkingDirectory = Get-Location
     Set-Location -Path $VaultLocation
-    # Same as 'g can' alias
-    & git add .
-    $CommitMessage = "Commit All @ $(Get-Date -Format "MM-dd-yyyy HH:mm:ss")"
-    & git commit -am $CommitMessage
-    # Same as 'g pp' alias
-    & git push --progress
+    Start-Job -ScriptBlock {
+        # Same as 'g can' alias
+        & git add .
+        $CommitMessage = "Commit All @ $(Get-Date -Format "MM-dd-yyyy HH:mm:ss")"
+        & git commit -am $CommitMessage
+        # Same as 'g pp' alias
+        & git push
+    } | Out-Null
     
     Set-Location -Path $WorkingDirectory
 

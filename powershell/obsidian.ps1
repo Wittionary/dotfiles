@@ -22,7 +22,7 @@ function Calculate-TimeElapsed {
     )
     $CumulativeTime = $null
     $ClockFormatPattern = "\d{1,2}:\d{1,2}\s?-\s?\d{1,2}:\d{1,2}"
-    $DurationFormatPattern = "\d{1,}\s?h([a-z\s]*\d{1,}\s?m[a-z]*)?"
+    $DurationFormatPattern = "\d{1,}\s?[hoursminute]+(\d{1,}\s?m[inutes]+)?"
 
     # Split into multiple sessions depending on the delimiter
     if (($RawSessions -match ",") -and ($RawSessions -match ";")) {
@@ -86,10 +86,10 @@ function Calculate-TimeDuration {
     # Should be receiving it all as one string (e.g. 1hr; 35m; 1h47m)
     # Start out supporting only hours and minutes
     if ($RawSession -match "\d{1,}\s?h") {
-        [int]$Hours = $Matches.Values.Split(" ")[0]
+        [int]$Hours = $Matches.Values.Split("h").Trim()[0]
     }
     if ($RawSession -match "\d{1,}\s?m") {
-        [int]$Minutes = $Matches.Values.Split(" ")[0]
+        [int]$Minutes = $Matches.Values.Split("m").Trim()[0]
     }
 
     $TimeDuration = New-TimeSpan -Hours $Hours -Minutes $Minutes
@@ -97,7 +97,7 @@ function Calculate-TimeDuration {
 }
 
 # Turn recorded daily note work sessions into sums of time per task/project
-function Process-DailyNote {
+function Process-DailyNoteLEGACY {
     param (
         [datetime]
         $Date = $(Get-Date),
@@ -107,7 +107,7 @@ function Process-DailyNote {
         $DailyNotePath = "$env:git\obsidian-vaults\notey-notes\daily notes\$($Date | Get-Date -Format yyyy-MM-dd) daily note.md"
     )
     $ClockFormatPattern = "\d{1,2}:\d{1,2}\s?-\s?\d{1,2}:\d{1,2}"
-    $DurationFormatPattern = "\d{1,}\s?h([a-z\s]*\d{1,}\s?m[a-z]*)?"
+    $DurationFormatPattern = "\d{1,}\s?[hoursminute]+(\d{1,}\s?m[inutes]+)?"
 
     # Import today's daily note automagically instead of piping in the data
     $DailyNoteContent = Get-Content $DailyNotePath
@@ -126,6 +126,10 @@ function Process-DailyNote {
             $DurationFormat = $Section -match $DurationFormatPattern
             # ^ Test data set for regex
             <#
+            30m
+            30minutes
+            30 m
+            30 minutes
             1h
             1hour
             1 hour
@@ -149,12 +153,10 @@ function Process-DailyNote {
 
             # If a time has already been registered as entered, add a visual indicator that's the case
             if ($Line -match "-\s\[\s\]") {
-                #$Line = $Line.Replace("- [ ] ","")
-                $Line = $Description
+                $Line = $Line.Replace("- [ ] ","")
                 $ForegroundColor = "Green"
             } elseif ($Line -match "-\s\[x\]") {
-                #$Line = $Line.Replace("- [x] ","")
-                $Line = $Description
+                $Line = $Line.Replace("- [x] ","")
                 $ForegroundColor = "Yellow"
             }
 
@@ -165,7 +167,7 @@ function Process-DailyNote {
     }
 }
 
-function Process-DailyNote2 {
+function Process-DailyNote {
     param (
         [datetime]
         $Date = $(Get-Date),
@@ -175,7 +177,7 @@ function Process-DailyNote2 {
         $DailyNotePath = "$env:git\obsidian-vaults\notey-notes\daily notes\$($Date | Get-Date -Format yyyy-MM-dd) daily note.md"
     )
     $ClockFormatPattern = "\d{1,2}:\d{1,2}\s?-\s?\d{1,2}:\d{1,2}"
-    $DurationFormatPattern = "\d{1,}\s?h([a-z\s]*\d{1,}\s?m[a-z]*)?"
+    $DurationFormatPattern = "\d{1,}\s?[hoursminute]+(\d{1,}\s?m[inutes]+)?"
     $TaskIncompletePattern = "-\s\[\s\]"
     $TaskCompletePattern = "-\s\[x\]"
 
@@ -200,7 +202,7 @@ function Process-DailyNote2 {
         } elseif ($Line -match $TaskCompletePattern) {
             $Task.Status = "complete"
         }
-        Write-Host "$($Task.Status)"
+        #Write-Host "STATUS: $($Task.Status)"
 
         # Remove that part from line
         # zzz abcdefg 1234 -> abcdefg 1234
@@ -208,18 +210,53 @@ function Process-DailyNote2 {
 
         # Get the time entries section
         if ($Line -match $ClockFormatPattern -or $Line -match $DurationFormatPattern) {
-            Write-Host "$Line"
-            $Sessions = $Line.Substring($Line.IndexOf($Matches.0) + 1, ($Line.Length - $Line.IndexOf($Matches.0))).Trim()
-            Write-Host "$Sessions"
+            #Write-Host "LINE: $Line"
+            $Sessions = $Line.Substring($Line.IndexOf($Matches.0), ($Line.Length - $Line.IndexOf($Matches.0))).Trim()
+            #Write-Host "SESSIONS: $Sessions"
             $Task.RawSessions = $Sessions
             
             # Get the title/description section
-            $Task.Title = $Line.Substring(0, $Line.IndexOf($Matches.0) + 1)
+            $Task.Title = $Line.Substring(0, $Line.IndexOf($Matches.0)).Trim()
+            #Write-Host "TITLE: $($Task.Title)"
         }
 
+        # Add up the time of the sessions
+        $Task.CumulativeTime = Calculate-TimeElapsed -RawSessions $Task.RawSessions -ReturnDatetimeObject $true
 
+        # Determine which Accelo ticket it might go towards
+        $Task.AcceloTicket = Get-AcceloTicketOptions -Description $Task.Title
+        
         $Tasks += $Task
     }
     
-    Write-Host "$($Tasks)"
+    # Output to user
+    Write-Host "`nThere are $($Tasks.Length) tasks"
+    foreach ($Task in $Tasks) {
+        if ($Task.Status -eq "complete") {
+            $ForegroundColor = "Yellow"
+        } elseif ($Task.Status -eq "incomplete") {
+            $ForegroundColor = "Green"
+        }
+        
+        Write-Host "$($Task.Title) --> " -NoNewline
+        Write-Host "$($Task.CumulativeTime.Hours) hours $($Task.CumulativeTime.Minutes) minutes" -ForegroundColor $ForegroundColor -NoNewline
+        Write-Host "    (TICKET: $($Task.AcceloTicket))"
+    }
+}
+
+function Get-AcceloTicketOptions{
+    param (
+        [Parameter(
+            Mandatory=$true,
+            Position=0
+        )]
+        [string]
+        $Description
+    )
+
+    switch -Regex ($Description) {
+        "training" { return "training"; break} # Internal - Self-development/training
+        "webinar" { return "training"; break}
+        Default {return "unknown"}
+    }
 }

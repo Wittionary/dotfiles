@@ -175,12 +175,14 @@ function Process-DailyNote {
         [ValidateScript({Test-Path $_, "Daily note not found at $_"})]
         [String]
         $DailyNotePath = "$env:git\obsidian-vaults\notey-notes\daily notes\$($Date | Get-Date -Format yyyy-MM-dd) daily note.md"
-    )
+    ) 
     $ClockFormatPattern = "\d{1,2}:\d{1,2}\s?-\s?\d{1,2}:\d{1,2}"
     $DurationFormatPattern = "\d{1,}\s?[hoursminute]+(\d{1,}\s?m[inutes]+)?"
     $TaskIncompletePattern = "-\s\[\s\]"
     $TaskCompletePattern = "-\s\[x\]"
-
+    
+    Clear-Host
+    
     # Import today's daily note automagically instead of piping in the data
     $DailyNoteContent = Get-Content $DailyNotePath
 

@@ -257,8 +257,11 @@ function Get-AcceloTicketOptions{
     )
 
     switch -Regex ($Description) {
-        "training" { return "training"; break} # Internal - Self-development/training
+        "training" { return "training"; break} # Internal - Professional Dev/Training
         "webinar" { return "training"; break}
+        "meeting" { return "internal meeting"; break} # Internal Meetings
+        # Internal Projects
+        # Internal - PreSales
         Default {return "unknown"}
     }
 }

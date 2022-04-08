@@ -43,7 +43,9 @@ There's a few special files in the hierarchy.
 ### quick zsh setup
 ```sh
 # Overwrites existing .zshrc
-mv "$(curl -fsSL https://raw.githubusercontent.com/Wittionary/dotfiles/main/zsh/.zshrc)" ~/.zshrc
+echo "$(curl -fsSL https://raw.githubusercontent.com/Wittionary/dotfiles/main/zsh/.zshrc)" | tee - ~/.zshrc; source ~/.zshrc
+
+curl -fsSL https://raw.githubusercontent.com/Wittionary/dotfiles/main/zsh/.zshrc --output ~/.zshrc;source ~/.zshrc
 ```
 
 ## thanks

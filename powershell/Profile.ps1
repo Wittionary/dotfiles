@@ -27,5 +27,5 @@ try {
     }
     Set-Location -Path $ENV:git
 } catch {
-    Write-Error "Functions not imported. '`$ENV:git' is set as '$ENV:git'"
+    Write-Error "Functions not imported. '`$ENV:git' value of '$ENV:git' is not valid."
 }

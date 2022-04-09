@@ -1,15 +1,20 @@
-# Luke's config for the Zoomer Shell
+# Originally started with Luke's config for the Zoomer Shell
 # https://gist.github.com/LukeSmithxyz/e62f26e55ea8b0ed41a65912fbebbe52
 
+# Gives me more colors on the prompt
+zmodload zsh/nearcolor
 # Enable colors and change prompt:
 autoload -U colors && colors
-PS1="%B%{$fg[red]%}[%{$fg[yellow]%}%n%{$fg[green]%}@%{$fg[blue]%}%M %{$fg[magenta]%}%~%{$fg[red]%}]%{$reset_color%}$%b "
-RPS1="%{$fg[red]%}(%{$reset_color%}%T%{$fg[red]%})"
-
+#PS1="%F%{$fg[white]%}%B%K%{$bg[yellow]%}%n %{$bg[magenta]%}%M %{$bg[blue]%}%(4~|../%2~|%~)%{$reset_color%}%(0#."STAR"."😀")%b "
+PS1="%B%{$bg[yellow]%}%n %{$bg[magenta]%}%M %{$bg[blue]%}%(4~|../%2~|%~)%(0#."✨"."😀")%b%{$reset_color%} "
+RPS1="%K{$bg[black]%}%{$fg[red]%}(%{$reset_color%}%T%(1j., %j."")%{$fg[red]%})%k%{$reset_color%}"
+#RPS2="%{$fg[red]%}(%{$reset_color%}witt{$fg[red]%})%f"
+# cp dotfiles/zsh/.zshrc ~/.zshrc;source ~/.zshrc
 # History in cache directory:
 HISTSIZE=10000
 SAVEHIST=10000
 HISTFILE=~/.cache/zsh/history
+
 
 # Basic auto/tab complete:
 autoload -U compinit
@@ -28,47 +33,6 @@ bindkey -M menuselect 'k' vi-up-line-or-history
 bindkey -M menuselect 'l' vi-forward-char
 bindkey -M menuselect 'j' vi-down-line-or-history
 bindkey -v '^?' backward-delete-char
-
-# Change cursor shape for different vi modes.
-function zle-keymap-select {
-  if [[ ${KEYMAP} == vicmd ]] ||
-     [[ $1 = 'block' ]]; then
-    echo -ne '\e[1 q'
-  elif [[ ${KEYMAP} == main ]] ||
-       [[ ${KEYMAP} == viins ]] ||
-       [[ ${KEYMAP} = '' ]] ||
-       [[ $1 = 'beam' ]]; then
-    echo -ne '\e[5 q'
-  fi
-}
-zle -N zle-keymap-select
-zle-line-init() {
-    zle -K viins # initiate `vi insert` as keymap (can be removed if `bindkey -V` has been set elsewhere)
-    echo -ne "\e[5 q"
-}
-zle -N zle-line-init
-echo -ne '\e[5 q' # Use beam shape cursor on startup.
-preexec() { echo -ne '\e[5 q' ;} # Use beam shape cursor for each new prompt.
-
-# Use lf to switch directories and bind it to ctrl-o
-lfcd () {
-    tmp="$(mktemp)"
-    lf -last-dir-path="$tmp" "$@"
-    if [ -f "$tmp" ]; then
-        dir="$(cat "$tmp")"
-        rm -f "$tmp"
-        [ -d "$dir" ] && [ "$dir" != "$(pwd)" ] && cd "$dir"
-    fi
-}
-bindkey -s '^o' 'lfcd\n'
-
-# Edit line in vim with ctrl-e:
-autoload edit-command-line; zle -N edit-command-line
-bindkey '^e' edit-command-line
-
-# Load aliases and shortcuts if existent.
-[ -f "$HOME/.config/shortcutrc" ] && source "$HOME/.config/shortcutrc"
-[ -f "$HOME/.config/aliasrc" ] && source "$HOME/.config/aliasrc"
 
 # Load zsh-syntax-highlighting; should be last.
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh 2>/dev/null

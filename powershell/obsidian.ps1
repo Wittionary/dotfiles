@@ -177,9 +177,10 @@ function Process-DailyNote {
         $DailyNotePath = "$env:git\obsidian-vaults\notey-notes\daily notes\$($Date | Get-Date -Format yyyy-MM-dd) daily note.md"
     ) 
     $ClockFormatPattern = "\d{1,2}:\d{1,2}\s?-\s?\d{1,2}:\d{1,2}"
-    $DurationFormatPattern = "\d{1,}\s?[hoursminute]+(\d{1,}\s?m[inutes]+)?"
+    $DurationFormatPattern = "\d{1,}\s?[hoursminue]+(\d{1,}\s?m[inutes]+)?"
     $TaskIncompletePattern = "-\s\[\s\]"
     $TaskCompletePattern = "-\s\[x\]"
+    $NotesPattern = "\(.*\)$"
     
     Clear-Host
     
@@ -210,6 +211,16 @@ function Process-DailyNote {
         # zzz abcdefg 1234 -> abcdefg 1234
         $Line = $Line.Substring(($Matches.0).Length + 1, $Line.Length - ($Matches.0).Length - 1).Trim()
 
+        # Get end-of-line notes/tags
+        if ($Line -match $NotesPattern) {
+            $Line = $Line.Substring(0, $Line.length - ($Matches.0).Length)
+            $Notes = $Matches.0
+            # Remove parentheses
+            $Notes = $Notes.Substring(1, ($Notes.Length) - 2)
+            $Task.Notes = $Notes
+            
+        }
+
         # Get the time entries section
         if ($Line -match $ClockFormatPattern -or $Line -match $DurationFormatPattern) {
             #Write-Host "LINE: $Line"
@@ -226,7 +237,7 @@ function Process-DailyNote {
         $Task.CumulativeTime = Calculate-TimeElapsed -RawSessions $Task.RawSessions -ReturnDatetimeObject $true
 
         # Determine which Accelo ticket it might go towards
-        $Task.AcceloTicket = Get-AcceloTicketOptions -Description $Task.Title
+        $Task.AcceloTicket = Get-AcceloTicketOptions -Description "$($Task.Title) $($Task.Notes)"
         
         $Tasks += $Task
     }
@@ -235,14 +246,14 @@ function Process-DailyNote {
     Write-Host "`nThere are $($Tasks.Length) tasks"
     foreach ($Task in $Tasks) {
         if ($Task.Status -eq "complete") {
-            $ForegroundColor = "Yellow"
-        } elseif ($Task.Status -eq "incomplete") {
             $ForegroundColor = "Green"
+        } elseif ($Task.Status -eq "incomplete") {
+            $ForegroundColor = "Yellow"
         }
         
         Write-Host "$($Task.Title) --> " -NoNewline
         Write-Host "$($Task.CumulativeTime.Hours) hours $($Task.CumulativeTime.Minutes) minutes" -ForegroundColor $ForegroundColor -NoNewline
-        Write-Host "    (TICKET: $($Task.AcceloTicket))"
+        Write-Host "    (TICKET: $($Task.AcceloTicket); NOTES: $($Task.Notes))"
     }
 }
 
@@ -260,7 +271,9 @@ function Get-AcceloTicketOptions{
         "training" { return "training"; break} # Internal - Professional Dev/Training
         "webinar" { return "training"; break}
         "meeting" { return "internal meeting"; break} # Internal Meetings
-        # Internal Projects
+        "do not bill" { return "internal projects"; break} # Internal Projects
+        "dnb" { return "internal projects"; break}
+        "DNB" { return "internal projects"; break}
         # Internal - PreSales
         Default {return "unknown"}
     }

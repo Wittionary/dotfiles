@@ -7,11 +7,15 @@
 zmodload zsh/nearcolor
 # Enable colors and change prompt:
 autoload -U colors && colors
-#PS1="%F%{$fg[white]%}%B%K%{$bg[yellow]%}%n %{$bg[magenta]%}%M %{$bg[blue]%}%(4~|../%2~|%~)%{$reset_color%}%(0#."STAR"."")%b "
+# PS1 deciphered:
+# Start bolding text; yellow bg; name of logged in user; magenta bg; hostname
+# blue bg; display working directory unless it's 3 dirs deep in which case display the current dir and its parent
+# if in privileged shell then show the star emoji, else show nothing
+# if last command exited 0 (success) then show happy face, else show mad face
+# End bolding text; reset fg and bg colors to default
 PS1="%B%{$bg[yellow]%}%n %{$bg[magenta]%}%M %{$bg[blue]%}%(4~|../%2~|%~)%(!.✨.)%(?.😀.😡)%b%{$reset_color%} "
-# TODO: swap with sad face if prev cmd returns non-zero: "$?" or %? in prompt
 RPS1="%K{$bg[black]%}%{$fg[red]%}(%{$reset_color%}%T%(1j., %j."")%{$fg[red]%})%k%{$reset_color%}"
-#RPS2="%{$fg[red]%}(%{$reset_color%}witt{$fg[red]%})%f"
+#RPS2="%{$fg_bold[red]%}(%{$reset_color%}witt{$fg_bold[red]%})%f"
 # cp dotfiles/zsh/.zshrc ~/.zshrc;source ~/.zshrc
 # HISTORY -------------------------
 HISTSIZE=1001
@@ -25,6 +29,8 @@ setopt HIST_IGNORE_DUPS HIST_EXPIRE_DUPS_FIRST # space savers and clarity makers
 # ALIASES ---------------------------
 alias cls=clear
 
+# FOLDER NAVIGATION -------------------------
+setopt AUTO_CD # change to dir if just the path is entered w/o the "cd" command
 
 # Basic auto/tab complete:
 autoload -U compinit

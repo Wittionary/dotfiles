@@ -18,7 +18,7 @@ d8888b.  .d88b.  d888888b d88888b d888888b db      d88888b .d8888.
 88  .8D ``8b  d8'    88    88        .88.   88booo. 88.     db   8D  
 Y8888D'  ``Y88P'     YP    YP      Y888888P Y88888P Y88888P ``8888Y'                                                                    
 "
-Write-Host $Toast
+#Write-Host $Toast
 
 try {
     $Functions = Get-ChildItem -Path "$ENV:git\dotfiles\powershell\*.ps1" | Where-Object {$_.Name -ne "Profile.ps1"}

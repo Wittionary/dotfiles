@@ -1,7 +1,7 @@
-# Resource: https://zsh.sourceforge.io/Guide/
-# Originally started with Luke's config for the Zoomer Shell
+# Resources:
+# - https://zsh.sourceforge.io/Guide/
+# Originally started with this config for the Zoomer Shell
 # https://gist.github.com/LukeSmithxyz/e62f26e55ea8b0ed41a65912fbebbe52
-
 
 # Gives me more colors on the prompt
 zmodload zsh/nearcolor

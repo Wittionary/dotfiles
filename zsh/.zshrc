@@ -28,6 +28,9 @@ setopt HIST_IGNORE_DUPS HIST_EXPIRE_DUPS_FIRST # space savers and clarity makers
 
 # ALIASES ---------------------------
 alias cls=clear
+alias tf=terraform
+alias tg=terragrunt
+
 
 # FOLDER NAVIGATION -------------------------
 setopt AUTO_CD # change to dir if just the path is entered w/o the "cd" command
@@ -44,5 +47,9 @@ bindkey -v
 export KEYTIMEOUT=1
 
 
+# https://github.com/zsh-users/zsh-autosuggestions
+source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+
 # Load zsh-syntax-highlighting; should be last.
-source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh 2>/dev/null
+# https://github.com/zsh-users/zsh-syntax-highlighting
+source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh 2>/dev/null

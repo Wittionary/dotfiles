@@ -40,6 +40,11 @@ alias cls=clear
 alias tf=terraform
 alias tg=terragrunt
 
+# FUNCTIONS ---------------------------
+fsearch() { # Fuzzy search w/ file contents preview
+    fzf --preview='head -$LINES {}' --preview-window=up:80%
+}
+
 
 # FOLDER NAVIGATION -------------------------
 setopt AUTO_CD # change to dir if just the path is entered w/o the "cd" command

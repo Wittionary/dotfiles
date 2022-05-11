@@ -49,12 +49,13 @@ fsearch() { # Fuzzy search w/ file contents preview
 # FOLDER NAVIGATION -------------------------
 setopt AUTO_CD # change to dir if just the path is entered w/o the "cd" command
 
-# Basic auto/tab complete:
+# TAB COMPLETION -------------------------
 autoload -U compinit
 zstyle ':completion:*' menu select
 zmodload zsh/complist
 compinit
 _comp_options+=(globdots)		# Include hidden files.
+source <(kubectl completion zsh) # kubectl completion
 
 # vi mode
 bindkey -v

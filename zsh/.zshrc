@@ -39,6 +39,7 @@ setopt HIST_IGNORE_DUPS HIST_EXPIRE_DUPS_FIRST # space savers and clarity makers
 alias cls=clear
 alias tf=terraform
 alias tg=terragrunt
+alias kc=kubectl
 
 # FUNCTIONS ---------------------------
 fsearch() { # Fuzzy search w/ file contents preview

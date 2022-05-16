@@ -21,11 +21,12 @@ Y8888D'  ``Y88P'     YP    YP      Y888888P Y88888P Y88888P ``8888Y'
 #Write-Host $Toast
 
 try {
-    $Functions = Get-ChildItem -Path "$ENV:git\dotfiles\powershell\*.ps1" | Where-Object {$_.Name -ne "Profile.ps1"}
+    $Functions = Get-ChildItem -Path "$ENV:git\dotfiles\powershell\*.ps1" | Where-Object {$_.Name -ne "profile.ps1"}
     foreach ($Function in $Functions) {
         Import-Module -Name $Function.FullName -Force
     }
     Set-Location -Path $ENV:git
+    Test-EnvVariables
 } catch {
     Write-Error "Functions not imported. '`$ENV:git' value of '$ENV:git' is not valid."
 }

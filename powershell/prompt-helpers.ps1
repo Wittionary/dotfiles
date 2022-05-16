@@ -45,3 +45,14 @@ function Get-LastCommandInfo {
 
     return $Command
 }
+
+# See if environment variables are set
+function Test-EnvVariables {
+    $Variables = @('$env:ESPANSO_CONFIG_DIR', '$env:git')
+
+    foreach ($Variable in $Variables) {
+        if ($null -eq $Variable) {
+            Write-Error "The variable $Variable is `$null."
+        }
+    }
+}

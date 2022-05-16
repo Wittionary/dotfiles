@@ -1,0 +1,18 @@
+# espanso configuration file
+name: ticket
+parent: base
+
+
+matches:
+  # Open a ticket
+  - trigger: ";;ticketpls"
+    replace: "Could you do me a huge favor? Open up a ticket and add all the details so we can track the work and keep the information in one spot.\n\nYou can open one at https://companyhelpdeskurl.com .\nTo login, click the blue link \"Log in with SAML Single Sign On\". At the top, click \"Requests\" and then \"+ New\"."
+
+  # Add notes to the ticket, not in chat or email
+  - trigger: ";;ticketnotes"
+    replace: "Hey,\n\nIf you would, please continue to add notes and details related to the ticket inside of the ticketing system so that we can maintain streamlined communication and ensure no information is lost.\n\nThanks for understanding!"
+    #passive_only: true
+
+  # Escalate the ticket properly
+  - trigger: ";;ticketescalate"
+    replace: "This ticket needs to go through service desk and then the supervisor, before it's escalated to sysadmins.\n\nThanks for understanding!"

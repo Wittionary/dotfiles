@@ -1,0 +1,4 @@
+# espanso configuration file
+name: vscode
+parent: base
+filter_title: "Visual Studio Code"

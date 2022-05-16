@@ -1,0 +1,10 @@
+# espanso configuration file
+name: emoji
+parent: base
+
+# Matches are the substitution rules, when you type the "trigger" string
+# it gets replaced by the "replace" string.
+matches:
+  # Simple text replacement
+  - trigger: ";;shrug"
+    replace: "¯\\_(ツ)_/¯"

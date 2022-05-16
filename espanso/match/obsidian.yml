@@ -1,0 +1,70 @@
+# espanso configuration file
+name: obsidian
+parent: base
+filter_title: "Obsidian"
+
+# ------------------- Obsidian matches
+
+matches:
+  # Simple text replacement
+  - trigger: ";;yes"
+    replace: "[[{{yesterday}} daily note]]"
+
+  - trigger: ";;today"
+    replace: "[[{{today}} daily note]]"
+    vars:
+      - name: today
+        type: match
+        params:
+          trigger: ";;date"
+
+  - trigger: ";;tom"
+    replace: "[[{{tomorrow}} daily note]]"
+
+
+# Code block
+  - trigger: ";;code"
+    replace: |
+            ```powershell
+            $|$
+            ```            
+
+# Markup priorities on tasks for the day
+  - trigger: ";;p1"
+    replace: "==(P1)=="
+
+  - trigger: ";;p2"
+    replace: "==(P2)=="
+
+# Add alias metadata to a file
+  - trigger: ";;alias"
+    replace: |
+            ---
+            aliases: ["$|$"]
+            ---
+
+# New "no ticket" note
+  - trigger: ";;noticket"
+    replace: "NT{{yearmonthday}}"
+    vars:
+      - name: yearmonthday
+        type: date
+        params:
+          format: "%y%m%d"
+
+
+# Where to pickup on tasks for when I come back to a project/ticket
+  - trigger: ";;next"
+    replace: |
+            Next steps:
+            - [ ] a
+
+# Link to a local file
+  - trigger: ";;file"
+    replace: "[$|$](file:///{{filepath}})"
+    vars:
+      - name: filepath
+        type: shell
+        params:
+          cmd: Get-Clipboard -Raw
+          shell: powershell

@@ -1,0 +1,91 @@
+# espanso match file
+
+# For a complete introduction, visit the official docs at: https://espanso.org/docs/
+
+# You can use this file to define the base matches (aka snippets)
+# that will be available in every application when using espanso.
+
+# Matches are substitution rules: when you type the "trigger" string
+# it gets replaced by the "replace" string.
+# Global vars
+global_vars:
+  - name: "yesterday"
+    type: shell
+    params:
+      cmd: "(Get-Date).AddDays(-1).ToString(\"yyyy-MM-dd\")"
+      shell: powershell
+  - name: "tomorrow"
+    type: shell
+    params:
+      cmd: "(Get-Date).AddDays(1).ToString(\"yyyy-MM-dd\")"
+      shell: powershell
+  - name: "yearmonth"
+    type: shell
+    params:
+      cmd: "(Get-Date).ToString(\"yyyy MMMM\")"
+      shell: powershell
+  - name: "month"
+    type: shell
+    params:
+      cmd: "(Get-Date).ToString(\"MMMM\")"
+      shell: powershell
+
+
+# Matches are the substitution rules, when you type the "trigger" string
+# it gets replaced by the "replace" string.
+matches:
+  # Dates
+  - trigger: ";;date"
+    replace: "{{yearmonthday}}"
+    vars:
+      - name: yearmonthday
+        type: date
+        params:
+          format: "%Y-%m-%d"
+
+  # Times
+  - trigger: ";;time"
+    replace: "{{militarytime}}"
+    vars:
+      - name: militarytime
+        type: date
+        params:
+          format: "%H:%M"
+
+  # Shell commands
+  - trigger: ";;ip"
+    replace: "{{output}}"
+    vars:
+      - name: output
+        type: shell
+        params:
+          cmd: "curl 'https://api.ipify.org'"
+
+  # Email -------- Follow up
+  - trigger: ";;emailfu"
+    replace: "Hey, hope your day is going well. I wanted to check-in and see if you've had the chance to look into this yet.\n\nThanks!"
+
+  # IT infrastructure and process improvement
+  - trigger: ";;sdquestions"
+    replace: "Please include answers to the following questions:\n- What's the business reason for this?\n- Have you tried to replicate the issue?\n- What have you tried already?\n- When did this start happening?\n- What error are you getting?\n- How many users are impacted?\n- Do they have a workaround?\n- What is the impact to the user's workflow?"
+  
+  - trigger: ";;saneit"
+    replace: "De-escalate and train.\nDistrust and verify.\nConsider the source. Then go to the source."
+
+  - trigger: ";;googleit"
+    replace: "What search results did Google yield?"
+
+  # Obsidian URI
+  - trigger: ";;obslink"
+    replace: "[{{note_title}}](obsidian://open?file={{note_path_encoded}})"
+    vars:
+      - name: note_title
+        type: shell
+        params:
+          cmd: Get-Clipboard -Raw
+          shell: powershell
+      - name: note_path_encoded
+        type: shell
+        params:
+          cmd: "[uri]::EscapeDataString($(Get-Clipboard))"
+          shell: powershell

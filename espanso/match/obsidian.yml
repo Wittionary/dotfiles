@@ -61,7 +61,7 @@ matches:
 
 # Link to a local file
   - trigger: ";;file"
-    replace: "[$|$](file:///{{filepath}})"
+    replace: "[$|$](<file:///{{filepath}}>)"
     vars:
       - name: filepath
         type: shell

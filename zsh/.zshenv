@@ -1,0 +1,1 @@
+GIT_PATH=/mnt/c/Users/WittAllen/git/

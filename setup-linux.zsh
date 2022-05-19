@@ -3,7 +3,7 @@
 
 # Test if git repo env var is set
 # If not, set it
-if [[ ! -z $GIT_PATH ]]; then
+if [[ -v GIT_PATH || -n $GIT_PATH ]]; then
     echo '$GIT_PATH is set'
 else 
     echo 'Enter a value for $GIT_PATH : '
@@ -26,7 +26,7 @@ if [ "$repo_exists" = true ]; then
     # .zshrc
     # If a file, delete and create symlink to dotfiles repo dotfile
     if [[ -f ~/.zshrc && !( -L ~/.zshrc) ]]; then
-        rm ~/.zshrc
+        rm -v ~/.zshrc
     # If it's already a symlink, notify user and continue
     elif [[ -L ~/.zshrc ]]; then
         echo "~/.zshrc is already symlinked"
@@ -37,7 +37,7 @@ if [ "$repo_exists" = true ]; then
 
     # .zshenv
     if [[ -f ~/.zshenv && !( -L ~/.zshenv) ]]; then
-        rm ~/.zshenv
+        rm -v ~/.zshenv
     elif [[ -L ~/.zshenv ]]; then
         echo "~/.zshenv is already symlinked"
     else
@@ -48,7 +48,7 @@ if [ "$repo_exists" = true ]; then
     # VIM ---------------------------------------------------------
     # .vimrc
     if [[ -f ~/.vimrc && !( -L ~/.vimrc) ]]; then
-        rm ~/.vimrc
+        rm -v ~/.vimrc
     elif [[ -L ~/.vimrc ]]; then
         echo "~/.vimrc is already symlinked"
     else
@@ -62,7 +62,7 @@ if [ "$repo_exists" = true ]; then
         echo "~/.vim/colors directory made"
     fi
     if [[ -f ~/.vim/colors/codedark.vim && !( -L ~/.vim/colors/codedark.vim) ]]; then
-        rm ~/.vim/colors/codedark.vim
+        rm -v ~/.vim/colors/codedark.vim
     elif [[ -L ~/.vim/colors/codedark.vim ]]; then
         echo "~/.vim/colors/codedark.vim is already symlinked"
     else

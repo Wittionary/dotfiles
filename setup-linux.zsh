@@ -21,11 +21,10 @@ else
     exit 1
 fi
 
-# Test if .zshrc .vimrc etc files exist
 if [ "$repo_exists" = true ]; then
     # ZSH ---------------------------------------------------------
     # .zshrc
-    # If yes, delete and create symlink to dotfiles repo dotfile
+    # If a file, delete and create symlink to dotfiles repo dotfile
     if [[ -f ~/.zshrc ]]; then
         /usr/bin/rm ~/.zshrc
     # If it's already a symlink, notify user and continue

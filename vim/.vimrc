@@ -19,3 +19,7 @@ syntax on
 
 " MAPPINGS ---------------------------
 inoremap jj <Esc>
+
+" Shift+Tab functionality for command mode and insert mode
+nnoremap <S-Tab> <<
+inoremap <S-Tab> <C-d>

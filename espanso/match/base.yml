@@ -91,7 +91,7 @@ matches:
           shell: powershell
 
   # Random pet
-  # Credit to https://github.com/dustinkirkland/golang-petname
+  # Credit to adjective and animal lists: https://github.com/dustinkirkland/golang-petname
   - trigger: ";;randompet"
     replace: "{{adjective}}{{separator}}{{animal}}"
     vars:

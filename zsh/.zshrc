@@ -49,6 +49,7 @@ fsearch() { # Fuzzy search w/ file contents preview
 get-aksconfig() {
     az aks get-credentials --resource-group $RANDOM_PET-rg --name $RANDOM_PET-aks --file kubeconfig --subscription 9ea62c4f-c45c-4e53-814e-96f6ad317ce6
     mv kubeconfig ~/.kube/config
+    chmod 600 ~/.kube/config
 }
 
 

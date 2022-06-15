@@ -1,7 +1,7 @@
-if [[ $(cat /etc/hostname) = "Monolith" ]]; then
+if [[ $(cat /etc/hostname) -eq "Monolith" ]]; then
     # when on Monolith
     GIT_PATH=/mnt/c/Users/Witt/Documents/GitHub
-elif [[ $(cat /etc/hostname) = "WALLEN-LT2" ]]; then
+elif [[ $(cat /etc/hostname) -eq "WAllen-LT2" ]]; then
     # when on work laptop
     GIT_PATH=/mnt/c/Users/WittAllen/git
 fi

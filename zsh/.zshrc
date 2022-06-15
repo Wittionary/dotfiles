@@ -43,7 +43,7 @@ alias kc=kubectl
 
 # FUNCTIONS ---------------------------
 fsearch() { # Fuzzy search w/ file contents preview
-    fzf --preview='head -$LINES {}' --preview-window=up:80%
+    fzf --preview='batcat --style=numbers --color=always --line-range :500 {}' --preview-window=up:80% --height 100% --layout=default
 }
 
 get-aksconfig() {
@@ -54,7 +54,7 @@ get-aksconfig() {
 
 
 # FOLDER NAVIGATION -------------------------
-setopt AUTO_CD # change to dir if just the path is entered w/o the "cd" command
+
 
 # TAB COMPLETION -------------------------
 autoload -U compinit

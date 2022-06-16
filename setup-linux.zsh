@@ -69,4 +69,15 @@ if [ "$repo_exists" = true ]; then
         ln -s -v $GIT_PATH/dotfiles/vim/colors/codedark.vim ~/.vim/colors/codedark.vim
         echo "~/.vim/colors/codedark.vim is now a symlink"
     fi
+
+    # WSL ---------------------------------------------------------
+    # wsl.config
+    if [[ -f /etc/wsl.conf && ! ( -L /etc/wsl.conf ) ]]; then
+        rm -v /etc/wsl.conf
+    elif [[ -L /etc/wsl.conf ]]; then
+        echo "/etc/wsl.conf is already symlinked"
+    else
+        ln -s -v $GIT_PATH/dotfiles/wsl/ubuntu-wsl.conf /etc/wsl.conf
+        echo "/etc/wsl.conf is now a symlink"
+    fi
 fi

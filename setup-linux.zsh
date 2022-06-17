@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/bash
 
 
 # Test if git repo env var is set

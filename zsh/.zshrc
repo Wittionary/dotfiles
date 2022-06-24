@@ -64,6 +64,15 @@ compinit
 _comp_options+=(globdots)		# Include hidden files.
 source <(kubectl completion zsh) # kubectl completion
 
+# DYNAMIC VARIABLES -------------------------
+if [[ $(cat /etc/hostname) -eq "Monolith" ]]; then
+    # when on Monolith
+    GIT_PATH=/mnt/c/Users/Witt/Documents/GitHub
+elif [[ $(cat /etc/hostname) -eq "ubuntu-wsl" ]]; then
+    # when on work laptop
+    GIT_PATH=/mnt/c/Users/WittAllen/git
+fi
+
 # vi mode
 bindkey -v
 export KEYTIMEOUT=1

@@ -35,15 +35,15 @@ if [ "$repo_exists" = true ]; then
         echo "~/.zshrc is now a symlink"
     fi
 
-    # # .zshenv
-    # if [[ -f ~/.zshenv && !( -L ~/.zshenv) ]]; then
-    #     rm -v ~/.zshenv
-    # elif [[ -L ~/.zshenv ]]; then
-    #     echo "~/.zshenv is already symlinked"
-    # else
-    #     ln -s $GIT_PATH/dotfiles/zsh/.zshenv ~/.zshenv
-    #     echo "~/.zshenv is now a symlink"
-    # fi
+    # .zshenv
+    if [[ -f ~/.zshenv && !( -L ~/.zshenv) ]]; then
+        rm -v ~/.zshenv
+    elif [[ -L ~/.zshenv ]]; then
+        echo "~/.zshenv is already symlinked"
+    else
+        ln -s $GIT_PATH/dotfiles/zsh/.zshenv ~/.zshenv
+        echo "~/.zshenv is now a symlink"
+    fi
 
     # VIM ---------------------------------------------------------
     # .vimrc
@@ -73,11 +73,13 @@ if [ "$repo_exists" = true ]; then
     # WSL ---------------------------------------------------------
     # wsl.config
     if [[ -f /etc/wsl.conf && ! ( -L /etc/wsl.conf ) ]]; then
-        rm -v /etc/wsl.conf
+        sudo rm -v /etc/wsl.conf
     elif [[ -L /etc/wsl.conf ]]; then
         echo "/etc/wsl.conf is already symlinked"
     else
         ln -s -v $GIT_PATH/dotfiles/wsl/ubuntu-wsl.conf /etc/wsl.conf
         echo "/etc/wsl.conf is now a symlink"
+        ln -s -v $GIT_PATH/dotfiles/wsl/resolv.conf /etc/resolv.conf
+        echo "/etc/resolv.conf is now a symlink"
     fi
 fi

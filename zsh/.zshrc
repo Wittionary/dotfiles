@@ -14,6 +14,7 @@ autoload -U colors && colors
 # End bolding text; reset fg and bg colors to default
 logged_in_user="%{$bg[yellow]%}%{$fg[black]%}%n"
 hostname="%{$bg[magenta]%}%{$fg[white]%}%M"
+#active_acct_az="%{$bg[magenta]%}%{$fg[white]%}$(az account show -o tsv --query name)"
 working_dir="%{$bg[blue]%}%(4~|../%2~|%~)"
 priv_shell="%(!.✨.)"
 exit_code="%(?.😀.😡)"
@@ -50,6 +51,10 @@ get-aksconfig() {
     az aks get-credentials --resource-group $RANDOM_PET-rg --name $RANDOM_PET-aks --file kubeconfig --subscription 9ea62c4f-c45c-4e53-814e-96f6ad317ce6
     mv kubeconfig ~/.kube/config
     chmod 600 ~/.kube/config
+}
+
+active-acct-az() {
+    az account show -o tsv --query name
 }
 
 

@@ -78,6 +78,13 @@ elif [[ $(cat /etc/hostname) == "ubuntu-wsl" ]]; then
     GIT_PATH=/mnt/c/Users/WittAllen/git
 fi
 
+# if [[ $(history | egrep 'az ') != ""]]; then /
+# # az command has run recently /
+# echo "az recently" /
+# else /
+# echo "az not recent" /
+# fi
+
 # vi mode
 bindkey -v
 export KEYTIMEOUT=1

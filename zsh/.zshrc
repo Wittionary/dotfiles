@@ -14,11 +14,11 @@ autoload -U colors && colors
 # End bolding text; reset fg and bg colors to default
 logged_in_user="%{$bg[yellow]%}%{$fg[black]%}%n"
 hostname="%{$bg[magenta]%}%{$fg[white]%}%M"
-#active_acct_az="%{$bg[magenta]%}%{$fg[white]%}$(az account show -o tsv --query name)"
+#active_acct_az=""
 working_dir="%{$bg[blue]%}%(4~|../%2~|%~)"
 priv_shell="%(!.✨.)"
 exit_code="%(?.😀.😡)"
-PS1="%B$logged_in_user $hostname $working_dir$priv_shell$exit_code%b%{$reset_color%} "
+PS1="%B$logged_in_user $active_acct_az $working_dir$priv_shell$exit_code%b%{$reset_color%} "
 
 left_boundary="%{$fg[red]%}(%{$reset_color%}"
 time="%T"
@@ -53,8 +53,20 @@ get-aksconfig() {
     chmod 600 ~/.kube/config
 }
 
+whereami() { # determine which cloud provider and kubernetes' contexts I'm under and display
+    if [[ -z $(history | grep --perl-regexp '^\s{2}\d{1,4}\s{2}az\s.*') ]]; then 
+        # az command has not run recently 
+        echo "az command has not run recently"
+    else 
+        active_acct_az=active-acct-az
+        echo $active_acct_az
+        source ~/.zshrc
+    fi
+}
+
 active-acct-az() {
-    az account show -o tsv --query name
+    az account show -o tsv --query name | cut -c 1-13
+    echo "endd"
 }
 
 
@@ -78,12 +90,7 @@ elif [[ $(cat /etc/hostname) == "ubuntu-wsl" ]]; then
     GIT_PATH=/mnt/c/Users/WittAllen/git
 fi
 
-# if [[ $(history | egrep 'az ') != ""]]; then /
-# # az command has run recently /
-# echo "az recently" /
-# else /
-# echo "az not recent" /
-# fi
+
 
 # vi mode
 bindkey -v

@@ -60,7 +60,7 @@ whereami() { # determine which cloud provider and kubernetes' contexts I'm under
     # AZ CLI
     if [[ -z $(history | grep --perl-regexp '^\s{2}\d{1,4}\s{2}az\s.*') ]]; then 
         # az command has not run recently 
-        active_acct_az=" "
+        active_acct_az=""
     else 
         active_acct_az=$(az account show -o tsv --query name | cut -c 1-13)
     fi
@@ -68,13 +68,17 @@ whereami() { # determine which cloud provider and kubernetes' contexts I'm under
     # KUBECTL
     if [[ -z $(history | grep --perl-regexp '^\s{2}\d{1,4}\s{2}(sudo\s)?(kubectl|kc){1}\s.*$') ]]; then 
         # kubectl (or alias) has not run recently 
-        active_kube_context=" "
+        active_kube_context=""
     else 
         active_kube_context=$(kubectl config current-context)
     fi
     
     source ~/.zshrc
 }
+
+if [[ $(date +%M | cut -c 2) == 1 ]];then
+    whereami &
+fi
 
 # FOLDER NAVIGATION -------------------------
 

@@ -243,7 +243,7 @@ function Process-DailyNote {
     }
     
     # Output to user
-    Write-Host "`nThere are $($Tasks.Length) tasks"
+    Write-Host "`nThere are $($Tasks.Length) tasks for $($Date | Get-Date -Format dddd), $($Date | Get-Date -Format 'MMMM dd')"
     foreach ($Task in $Tasks) {
         if ($Task.Status -eq "complete") {
             $ForegroundColor = "Green"

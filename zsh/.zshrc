@@ -44,6 +44,8 @@ alias cls=clear
 alias tf=terraform
 alias tg=terragrunt
 alias kc=kubectl
+alias aws.whoami='aws iam get-user --query User.Arn --output text'
+alias az.whoami='az ad signed-in-user show --query userPrincipalName --output tsv'
 
 # FUNCTIONS ---------------------------
 fsearch() { # Fuzzy search w/ file contents preview

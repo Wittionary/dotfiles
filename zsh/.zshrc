@@ -58,7 +58,7 @@ get-aksconfig() {
     chmod 600 ~/.kube/config
 }
 
-whereami() { # determine which cloud provider and kubernetes' contexts I'm under and display
+periodic_whereami() { # determine which cloud provider and kubernetes' contexts I'm under and display
     # AZ CLI
     if [[ -z $(history | grep --perl-regexp '^\s{2}\d{1,4}\s{2}az\s.*') ]]; then 
         # az command has not run recently 
@@ -78,9 +78,17 @@ whereami() { # determine which cloud provider and kubernetes' contexts I'm under
     source ~/.zshrc
 }
 
-if [[ $(date +%M | cut -c 2) == 1 ]];then
-    whereami &
-fi
+settitle() { # Set terminal window/tab title with argument
+    window_title=$(history -1 | cut -d ' ' -f 4-)
+    echo -ne '\033]0;'"${window_title}"'\a'
+}
+
+# HOOKS ---------------------------
+autoload -Uz add-zsh-hook
+PERIOD=600
+add-zsh-hook periodic whereami
+add-zsh-hook precmd settitle
+
 
 # FOLDER NAVIGATION -------------------------
 

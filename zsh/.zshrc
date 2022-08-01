@@ -58,7 +58,7 @@ get-aksconfig() {
     chmod 600 ~/.kube/config
 }
 
-periodic_whereami() { # determine which cloud provider and kubernetes' contexts I'm under and display
+whereami() { # determine which cloud provider and kubernetes' contexts I'm under and display
     # AZ CLI
     if [[ -z $(history | grep --perl-regexp '^\s{2}\d{1,4}\s{2}az\s.*') ]]; then 
         # az command has not run recently 

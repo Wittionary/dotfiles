@@ -3,7 +3,8 @@ colorscheme codedark
 
 " numbers on left-hand side
 set number
-
+" relative numbers on left-hand side
+set relativenumber
 " Highlight cursor line underneath the cursor horizontally.
 set cursorline
 " Highlight cursor line underneath the cursor vertically.

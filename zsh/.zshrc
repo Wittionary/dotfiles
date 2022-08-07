@@ -13,7 +13,7 @@ autoload -U colors && colors
 # if last command exited 0 (success) then show happy face, else show mad face
 # End bolding text; reset fg and bg colors to default
 logged_in_user="%{$bg[yellow]%}%{$fg[black]%}%n"
-kube_context="%{$bg[yellow]%}%{$fg[black]%}☸ $active_kube_context"
+kube_context="%{$bg[yellow]%}%{$fg[black]%}🧊 $active_kube_context"
 
 hostname="%{$bg[magenta]%}%{$fg[white]%}%M"
 active_acct_display="%{$bg[magenta]%}%{$fg[white]%}☁️ $active_acct_az"
@@ -21,13 +21,14 @@ active_acct_display="%{$bg[magenta]%}%{$fg[white]%}☁️ $active_acct_az"
 working_dir="%{$bg[blue]%}%(4~|../%2~|%~)"
 priv_shell="%(!.✨.)"
 exit_code="%(?.😀.😡)"
-PS1="%B$kube_context $active_acct_display$working_dir$priv_shell$exit_code%b%{$reset_color%} "
+PS1="%B$kube_context$active_acct_display$working_dir$priv_shell$exit_code%b%{$reset_color%} "
 
 left_boundary="%{$fg[red]%}(%{$reset_color%}"
 time="%T"
 bg_jobs="%(1j., %j."")"
 right_boundary="%{$fg[red]%})%{$reset_color%}"
-RPS1="%K{$bg[black]%}$left_boundary$time$bg_jobs$right_boundary%k"
+#RPS1="%K{$bg[black]%}$bg_jobs%k"
+#RPS1="%K{$bg[black]%}$left_boundary$time$bg_jobs$right_boundary%k "
 #RPS2="%{$fg_bold[red]%}(%{$reset_color%}witt{$fg_bold[red]%})%f"
 # cp dotfiles/zsh/.zshrc ~/.zshrc;source ~/.zshrc
 # HISTORY -------------------------

@@ -50,7 +50,7 @@ alias az.whoami='az ad signed-in-user show --query userPrincipalName --output ts
 
 # FUNCTIONS ---------------------------
 kc() { # kubectl but as a rainbow
-    kubectl ${1} ${2} ${3} ${4} ${5} ${6} ${7} ${8} | lolcat --freq=0.3
+    kubectl $@ | lolcat --freq=0.3
 }
 
 fsearch() { # Fuzzy search w/ file contents preview

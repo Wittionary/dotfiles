@@ -44,11 +44,15 @@ setopt HIST_IGNORE_DUPS HIST_EXPIRE_DUPS_FIRST # space savers and clarity makers
 alias cls=clear
 alias tf=terraform
 alias tg=terragrunt
-alias kc=kubectl
+#alias kc=kubectl
 alias aws.whoami='aws iam get-user --query User.Arn --output text'
 alias az.whoami='az ad signed-in-user show --query userPrincipalName --output tsv'
 
 # FUNCTIONS ---------------------------
+kc() { # kubectl but as a rainbow
+    kubectl ${1} ${2} ${3} ${4} ${5} ${6} ${7} ${8} | lolcat --freq=0.3
+}
+
 fsearch() { # Fuzzy search w/ file contents preview
     fzf --preview='batcat --style=numbers --color=always --line-range :500 {}' --preview-window=up:80% --height 100% --layout=default
 }

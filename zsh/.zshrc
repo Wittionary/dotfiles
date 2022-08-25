@@ -65,7 +65,7 @@ get-aksconfig() {
 
 whereami() { # determine which cloud provider and kubernetes' contexts I'm under and display
     # AZ CLI
-    if [[ -z $(history | grep --perl-regexp '^\s{2}\d{1,4}\s{2}az\s.*') ]]; then 
+    if [[ -z $(history | grep --perl-regexp '^\s{1,2}\d{1,4}\s{2}az\s.*') ]]; then 
         # az command has not run recently 
         active_acct_az=""
     else 
@@ -73,7 +73,7 @@ whereami() { # determine which cloud provider and kubernetes' contexts I'm under
     fi
 
     # KUBECTL
-    if [[ -z $(history | grep --perl-regexp '^\s{2}\d{1,4}\s{2}(sudo\s)?(kubectl|kc){1}\s.*$') ]]; then 
+    if [[ -z $(history | grep --perl-regexp '^\s{1,2}\d{1,4}\s{2}(sudo\s)?(kubectl|kc){1}\s.*$') ]]; then 
         # kubectl (or alias) has not run recently 
         active_kube_context=""
     else 

@@ -17,8 +17,7 @@ function prompt {
     if (Test-Administrator) {
         # Use different username if elevated
         $Host.UI.RawUI.WindowTitle = "✨ $(Get-LastCommandInfo)"
-    }
-    else {
+    } else {
         $Host.UI.RawUI.WindowTitle = Get-LastCommandInfo
     }
     

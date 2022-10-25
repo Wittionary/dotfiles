@@ -1,15 +1,12 @@
 # Word of the Day
 function Get-WordOfTheDay {
     param (
-        [Parameter(Mandatory=$true)]
-        [string]
-        $WordnikApiKey = $env:WordnikApiKey,
-
         [Parameter(Position=0)]
         [Alias("DefinitionDetail")]
         [ValidateSet("Long", "Short", "All")]
         $DefinitionLength = "Long" # long | short | all
     )
+    $WordnikApiKey = "$env:WordnikApiKey"
 
     $Headers = @{"Accept" = "application/json"}
     $Response = Invoke-WebRequest -Uri "https://api.wordnik.com/v4/words.json/wordOfTheDay?api_key=$WordnikApiKey" -Headers $Headers -Method Get | ConvertFrom-Json

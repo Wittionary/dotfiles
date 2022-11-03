@@ -4,7 +4,7 @@ function Get-WordOfTheDay {
         [Parameter(Position=0)]
         [Alias("DefinitionDetail")]
         [ValidateSet("Long", "Short", "All")]
-        $DefinitionLength = "Long" # long | short | all
+        $DefinitionLength = "All" # long | short | all
     )
     $WordnikApiKey = "$env:WordnikApiKey"
 
@@ -22,12 +22,25 @@ function Get-WordOfTheDay {
         # and do nothing
     }
 
-    $Word = "$($PSStyle.Bold)$($PSStyle.Background.Blue)$Word$($PSStyle.Reset)"
-    Write-Host " $Word -"
+    # If figlet is installed on WSL, give me a BIG word
+    if (Get-Command wsl -ErrorAction SilentlyContinue) {
+        $TempWord = wsl -- figlet $Word
+        if ($?) {
+            #$Word = $null
+            foreach ($Line in $TempWord) {
+                $BigWord += " $($PSStyle.Bold)$($PSStyle.Background.Blue)$Line$($PSStyle.Reset)`n"
+            }
+        } else {
+            Write-Error "figlet not installed on WSL"
+        }
+    }
+
+    $Word = " $($PSStyle.Bold)$($PSStyle.Background.Blue)$Word$($PSStyle.Reset)"
+    Write-Host "$BigWord $Word"
     foreach ($Definition in $Definitions) {
         $PartOfSpeech = "$($PSStyle.Italic)$($Definition.partOfSpeech)$($PSStyle.ItalicOff)"
         $Text = "$($Definition.text)"
-        Write-Host "`t($PartOfSpeech)`t$Text`n"
+        Write-Host "`t($PartOfSpeech)`t$Text"
     }
     $PartOfSpeech = "$($PSStyle.Foreground.Blue)$($Response.note)$($PSStyle.Reset)"
     Write-Host "`t$PartOfSpeech"

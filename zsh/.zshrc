@@ -10,7 +10,7 @@ autoload -U colors && colors
 # Start bolding text; yellow bg; name of logged in user; magenta bg; hostname
 # blue bg; display working directory unless it's 3 dirs deep in which case display the current dir and its parent
 # if in privileged shell then show the star emoji, else show nothing
-# if last command exited 0 (success) then show happy face, else show mad face
+# if last command exited 0 (success) then show happy face, else show mad/poo face
 # End bolding text; reset fg and bg colors to default
 logged_in_user="%{$bg[yellow]%}%{$fg[black]%}%n"
 kube_context="%{$bg[yellow]%}%{$fg[black]%} $active_kube_context"
@@ -20,7 +20,7 @@ active_acct_display="%{$bg[magenta]%}%{$fg[white]%}☁️ $active_acct_az"
 
 working_dir="%{$bg[blue]%}%(4~|../%2~|%~)"
 priv_shell="%(!.✨.)"
-exit_code="%(?.😀.😡)"
+exit_code="%(?.😀.💩)"
 PS1="%B$kube_context$active_acct_display$working_dir$priv_shell$exit_code%b%{$reset_color%} "
 
 left_boundary="%{$fg[red]%}(%{$reset_color%}"
@@ -123,6 +123,9 @@ fi
 # vi mode
 bindkey -v
 export KEYTIMEOUT=1
+
+# autosuggestion - accept next word
+#bindkey '^[[1;5C' forward-word # Ctrl + Right
 
 
 # https://github.com/zsh-users/zsh-autosuggestions

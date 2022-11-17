@@ -1012,3 +1012,16 @@ matches:
         type: echo
         params:
           echo: "-"
+
+  # List of the 8 feelings
+  - trigger: ";;feelings"
+    form: |
+      [[example_choice]]
+      Hurt
+      Anger
+      Lonely
+      Sad
+      Shame
+      Guilt
+      Fear
+      Glad

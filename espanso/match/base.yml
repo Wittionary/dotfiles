@@ -82,7 +82,8 @@ matches:
       - name: note_title
         type: shell
         params:
-          cmd: Get-Clipboard -Raw
+          # Remove ticket ID, separate client name from project description
+          cmd: $(Get-Clipboard -raw).Split("-")[1].trim().Split(" ")[0] + " - " + $(Get-Clipboard -raw).Split("-")[1].trim().Split(" ")[1..($(Get-Clipboard -raw).Split("-")[1].trim().Split(" ").Length)]
           shell: powershell
       - name: note_path_encoded
         type: shell

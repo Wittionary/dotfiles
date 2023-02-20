@@ -12,7 +12,7 @@ Clear-Host
 try {
     $Functions = Get-ChildItem -Path "$ENV:git\dotfiles\powershell\*.ps1" | Where-Object {$_.Name -ne "profile.ps1"}
     foreach ($Function in $Functions) {
-        Import-Module -Name $Function.FullName -Force &
+        Import-Module -Name $Function.FullName -Force
     }
     Set-Location -Path $ENV:git
     Test-EnvVariables

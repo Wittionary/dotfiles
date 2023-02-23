@@ -1,0 +1,183 @@
+/* NOTE:
+I never consider my CSS ready for production
+but it gets the job done
+usually.
+*/
+
+
+/* --------------------- TITLE BAR AREA --------------------- */
+
+.UrlBar-AddressField.button-textonly.below {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+/* Gets rid of placeholder text "Search or enter an address" in address field */
+input#urlFieldInput::placeholder {
+    opacity: 0;
+}
+
+/* Gets rid of placeholder text in both address and search field */
+input::placeholder {
+    color: transparent;
+}
+
+/* --------------------- TABS --------------------- */
+/* Indent the active tab */
+.tab-position>.tab.active {
+    margin-left: 8px;
+}
+
+
+/* --------------------- VARIABLES --------------------- */
+/* 
+anchorPos
+anchorPosition
+AttachmentSize
+backgroundBlur
+borderDisabled
+buttonHeight
+ButtonSize
+buttonWidth
+circumference
+clockWidth
+colorAccentBg
+colorAccentBgAlpha
+colorAccentBgAlphaHeavy
+colorAccentBgDark
+colorAccentBgDarker
+colorAccentBgFaded
+colorAccentBgFadedMore
+colorAccentBgFadedMost
+colorAccentBorder
+colorAccentBorderDark
+colorAccentFg
+colorAccentFgAlpha
+colorAccentFgFaded
+colorBg
+colorBgAlpha
+colorBgAlphaBlur
+colorBgAlphaHeavier
+colorBgAlphaHeavy
+colorBgDark
+colorBgDarker
+colorBgError
+colorBgFaded
+colorBgIntense
+colorBgIntenser
+colorBgIntserAlpha
+colorBgInverse
+colorBgInverser
+colorBgLight
+colorBgLighter
+colorBgLightIntense
+colorBorder
+colorBorderDisabled
+colorBorderIntense
+colorBorderSubtle
+colorCalendarBg
+colorCalendarBgAlpha
+colorCalendarFg
+colorError
+colorErrorBg
+colorErrorBgAlpha
+colorErrorFg
+colorFg
+colorFgAlpha
+colorFgDark
+colorFgFaded
+colorFgFadedMore
+colorFgFadedMost
+colorFgIntense
+colorHighlightBg
+colorHighlightBgAlpha
+colorHighlightBgDark
+colorHighlightBgFaded
+colorHighlightFg
+colorHighlightFgAlpha
+colorHighlightFgAlphaHeavy
+colorImageBAlpha
+colorImageBg
+colorImageBgAlpha
+colorImageBgAlphaHeavy
+colorImageBottomBg
+colorImageBottomBgAlpha
+colorImageBottomBgAlphaHeavy
+colorImageBottomFg
+colorImageBottomFgAlphaHeavy
+colorImageCenterBgAlpha
+colorImageCenterFg
+colorImageCenterFgAlpha
+colorImageFg
+colorImageFgHeaviest
+colorImageLeftBg
+colorImageLeftBgAlpha
+colorImageLeftBgAlphaHeavy
+colorImageLeftFg
+colorImageLeftFgAlphaHeavy
+colorImageRightBg
+colorImageRightBgAlpha
+colorImageRightBgAlphaHeavy
+colorImageRightFg
+colorImageRightFgAlphaHeavy
+colorImageTopBg
+colorImageTopBgAlpha
+colorImageTopBgAlphaHeavy
+colorImageTopFg
+colorImageTopFgAlphaHeavy
+colorSuccessBg
+colorSuccessBgAlpha
+colorTabBar
+colorWarning
+colorWarningBg
+colorWarningBgAlpha
+colorWarningFg
+colorWindowBg
+duration
+edgeMargin
+EditorPadding
+favicon
+FooterHeight
+foregroundColor
+gridColumns
+Height
+HighlightColor
+HorizontalPadding
+hourDeg
+hourOffset
+iconOpacity
+IconSize
+IconSpace
+innerRadius
+InternalPadding
+item
+itemHeight
+LowlightColor
+MaxWidth
+metadataLineHeight
+minuteDeg
+minuteOffset
+MinWidth
+Opacity
+padding
+photo
+popupHeight
+popupWidth
+PositionX
+radius
+radiusCap
+radiusHalf
+radiusRound
+radiusRounded
+radiusRoundedLess
+radiusThird
+scrollbarWidth
+SearchFieldWidth
+secondDeg
+ToolbarItemGap
+totalGap
+uiZoomLevel
+view
+Width
+yield
+ZIndex */

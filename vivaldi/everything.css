@@ -25,6 +25,19 @@ input::placeholder {
     color: transparent;
 }
 
+.UrlBar-AddressField {
+    background: rgba(0,0,0,0.4) /* Semi-transparent background */
+}
+
+.UrlBar-SearchField {
+    background: rgba(0,0,0,0.4) /* Semi-transparent background */
+}
+
+.vivaldi-searchfield.searchfield-input {
+    color: rgba(255,255,255,1) /* Increase contrast by offsetting transparent background */
+}
+
+
 /* --------------------- TABS --------------------- */
 /* Indent the active tab */
 .tab-position>.tab.active {

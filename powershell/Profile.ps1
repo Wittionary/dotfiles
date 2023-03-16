@@ -16,7 +16,7 @@ try {
     }
     Set-Location -Path $ENV:git
     Test-EnvVariables
-    Get-WordOfTheDay
+    #Get-WordOfTheDay
 } catch {
     Write-Error "Functions not imported. '`$ENV:git' value of '$ENV:git' is not valid."
 }

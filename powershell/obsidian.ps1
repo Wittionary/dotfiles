@@ -104,7 +104,10 @@ function Process-DailyNote {
 
         [ValidateScript({Test-Path $_, "Daily note not found at $_"})]
         [String]
-        $DailyNotePath = "$env:git\obsidian-vaults\notey-notes\daily notes\$($Date | Get-Date -Format yyyy-MM-dd) daily note.md"
+        $DailyNotePath = "$env:git\obsidian-vaults\notey-notes\daily notes\$($Date | Get-Date -Format yyyy-MM-dd) daily note.md",
+
+        [bool]
+        $Debug = $false
     ) 
     $ClockFormatPattern = "\d{1,2}:\d{1,2}\s?-\s?\d{1,2}:\d{1,2}"
     $DurationFormatPattern = "\d{1,}\s?[hoursminue]+(\d{1,}\s?m[inutes]+)?"
@@ -116,9 +119,13 @@ function Process-DailyNote {
     
     # Import today's daily note automagically instead of piping in the data
     $DailyNoteContent = Get-Content $DailyNotePath
+    if ($Debug) { Write-Host "DailyNoteContent raw:`n$DailyNoteContent"}
 
-    # Only include lines with a time entry
+    # Only include lines that are a task
+    $DailyNoteContent = $DailyNoteContent | Where-Object {($_ -match $TaskIncompletePattern) -or ($_ -match $TaskCompletePattern)}
+    # Only include lines that have a time entry
     $DailyNoteContent = $DailyNoteContent | Where-Object {($_ -match $ClockFormatPattern) -or ($_ -match $DurationFormatPattern)}
+    if ($Debug) { Write-Host "DailyNoteContent matched:`n$DailyNoteContent"}
 
     $Tasks = @()
     foreach ($Line in $DailyNoteContent) {
@@ -131,6 +138,7 @@ function Process-DailyNote {
     Write-Host "$($Tasks.Length)" -ForegroundColor Cyan -NoNewline
     Write-Host " tasks for $($Date | Get-Date -Format dddd), $($Date | Get-Date -Format 'MMMM dd')"
     foreach ($Task in $Tasks) {
+        if ($Debug) { Write-Host "Task: $($Task.Title)"}
         Display-DailyNoteTask -Task $Task
     }
     
@@ -148,6 +156,7 @@ function Get-AcceloTicketOptions{
 
     switch -Regex ($Description) {
         "training" { return "training"; break} # Internal - Professional Dev/Training
+        "learning" { return "training"; break}
         "webinar" { return "training"; break}
         "meeting" { return "internal meeting"; break} # Internal Meetings
         "do not bill" { return "internal projects"; break} # Internal Projects

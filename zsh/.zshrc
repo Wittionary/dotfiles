@@ -134,6 +134,9 @@ export KEYTIMEOUT=1
 # https://github.com/zsh-users/zsh-autosuggestions
 source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 
+# https://github.com/wting/autojump
+source /usr/share/autojump/autojump.sh
+
 # Load zsh-syntax-highlighting; should be last.
 # https://github.com/zsh-users/zsh-syntax-highlighting
 source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh 2>/dev/null

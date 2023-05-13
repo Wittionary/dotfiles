@@ -121,6 +121,9 @@ elif [[ $(cat /etc/hostname) == "hacktop" ]]; then
     GIT_PATH=/home/witt/git
 fi
 
+# STATIC VARIABLES -------------------------
+export GOPATH=$HOME/go
+export PATH=$PATH:$GOPATH/bin
 
 
 # vi mode

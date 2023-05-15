@@ -59,7 +59,8 @@ if [ "$repo_exists" = true ]; then
     fi
     if [[ -f ~/.vim/colors/codedark.vim && ! ( -L ~/.vim/colors/codedark.vim ) ]]; then
         rm -v ~/.vim/colors/codedark.vim
-    elif [[ -L ~/.vim/colors/codedark.vim ]]; then && echo "~/.vim/colors/codedark.vim is already symlinked"
+    elif [[ -L ~/.vim/colors/codedark.vim ]]; then
+        echo "~/.vim/colors/codedark.vim is already symlinked"
     else
         ln -s -v $GIT_PATH/dotfiles/vim/colors/codedark.vim ~/.vim/colors/codedark.vim && echo "~/.vim/colors/codedark.vim is now a symlink"
     fi

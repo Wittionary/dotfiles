@@ -140,3 +140,5 @@ source /usr/share/autojump/autojump.sh
 # Load zsh-syntax-highlighting; should be last.
 # https://github.com/zsh-users/zsh-syntax-highlighting
 source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh 2>/dev/null
+# add Pulumi to the PATH
+export PATH=$PATH:$HOME/.pulumi/bin

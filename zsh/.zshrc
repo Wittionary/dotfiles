@@ -52,6 +52,29 @@ alias ...="cd ../.."
 alias ....="cd ../../.."
 
 # FUNCTIONS ---------------------------
+g() { # git aliases/chords
+    if [[ "$1" == "s" || "$1" == "" ]]; then
+        git status -sb
+    elif [[ "$1" == "b" ]]; then
+        git branch --list
+    elif [[ "$1" == "p" ]]; then
+        git pull
+    elif [[ "$1" == "can" ]]; then
+        # Commit all now
+        git add .
+        CommitMessage = "Commit All @ $(date +%m-%d-%y) $(date +%H:%M:%S)"
+        git commit -am $CommitMessage
+    elif [[ "$1" == "ca" ]]; then
+        git add .
+        git commit -am $2
+    elif [[ "$1" == "cu" ]]; then
+        # Undo that last commit
+        #echo "StackOverflow link is in clipboard"
+        echo "https://stackoverflow.com/questions/927358/how-do-i-undo-the-most-recent-local-commits-in-git"
+    elif [[ "$1" == "pp" ]]; then
+        git push --progress
+    fi
+}
 kc() { # kubectl but as a rainbow
     kubectl $@ | lolcat --freq=0.3
 }
@@ -121,6 +144,9 @@ elif [[ $(cat /etc/hostname) == "hacktop" ]]; then
     GIT_PATH=/home/witt/git
 fi
 
+# STATIC VARIABLES -------------------------
+export GOPATH=$HOME/go
+export PATH=$PATH:$GOPATH/bin
 
 
 # vi mode

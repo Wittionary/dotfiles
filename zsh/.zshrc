@@ -117,7 +117,7 @@ settitle() { # Set terminal window/tab title with argument
 # HOOKS ---------------------------
 autoload -Uz add-zsh-hook
 PERIOD=600
-add-zsh-hook periodic whereami
+#add-zsh-hook periodic whereami # the source-ing lags up the terminal; frustrating
 add-zsh-hook precmd settitle
 
 

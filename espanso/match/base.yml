@@ -1034,3 +1034,8 @@ matches:
   # Decline meetings
   - trigger: ";;nomeet"
     replace: "Hey, I don't think I'm needed for today's meeting so I was planning on not attending. Is there anything you need from me?"
+
+  # Generates a Github link to a repo of that name
+  - trigger: ";;gh"
+    form: |
+      https://github.com/Wittionary/[[repository]]

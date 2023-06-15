@@ -33,6 +33,12 @@ function g {
     } elseif ($CommandSequence -eq "pp") {
         # Push
         & git push --progress
+    } elseif ($CommandSequence -eq "l") {
+        # Recent commits
+        & git log -3
+    } elseif ($CommandSequence -eq "ll") {
+        # All of the commits
+        & git log
     }
 }
 

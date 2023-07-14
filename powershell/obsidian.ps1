@@ -117,6 +117,11 @@ function Process-DailyNote {
     
     Clear-Host
     
+    # See if note path exists
+    if (!(Test-Path $DailyNotePath)) {
+        Write-Host "Daily note not found at path:`n`n$DailyNotePath`n`nWas a note made on this day?"
+        break
+    }
     # Import today's daily note automagically instead of piping in the data
     $DailyNoteContent = Get-Content $DailyNotePath
     if ($Debug) { Write-Host "DailyNoteContent raw:`n$DailyNoteContent"}

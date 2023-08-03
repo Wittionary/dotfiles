@@ -77,14 +77,17 @@ function Calculate-TimeElapsed {
             } else {
                 Write-Error "Something is catastrophically wrong.`n`t`$ElapsedSession.Minutes: $($ElapsedSession.Minutes)"
             }
-            $RoundedSession = New-TimeSpan -Days $ElapsedSession.Days -Hours $ElapsedSession.Hours -Minutes 30
+            $RoundedSession = New-TimeSpan -Days $ElapsedSession.Days -Hours $ElapsedSession.Hours -Minutes $RoundedMinutes
 
             $CumulativeTime += $ElapsedSession
             $CumulativeRoundedTime += $RoundedSession
         } elseif ($Session -match $DurationFormatPattern) {
-            # add rounding
-            $ElapsedSession = Calculate-TimeDuration -RawSession $Session
+            Write-Host "SESSION $Session matches DURATIONFORMAT"
+            $ElapsedSession = Calculate-TimeDuration -RawSession $Session -Rounded $false
             $CumulativeTime += $ElapsedSession
+
+            $RoundedSession = Calculate-TimeDuration -RawSession $Session
+            $CumulativeRoundedTime += $RoundedSession
         }
     }
 
@@ -113,7 +116,10 @@ function Calculate-TimeDuration {
             Mandatory = $true
         )]
         [string]
-        $RawSession
+        $RawSession,
+
+        [Boolean]
+        $Rounded = $true
     )
     $Hours = 0
     $Minutes = 0
@@ -128,33 +134,37 @@ function Calculate-TimeDuration {
         [int]$Minutes = $Matches.Values.Split("m").Trim()[0]
     }
 
-    # Round the duration session UP or DOWN based off of how JH does it
-    # <=18m             == 15 mins
-    # >18m, <=33m       == 30 mins
-    # >33m, <=48m       == 45 mins
-    # >48m              == 60 mins
-    $RoundedMinutes = 0
-    if ($Minutes -le 3) {
-        # round to 0
+    if ($Rounded) {
+        # Round the duration session UP or DOWN based off of how JH does it
+        # <=18m             == 15 mins
+        # >18m, <=33m       == 30 mins
+        # >33m, <=48m       == 45 mins
+        # >48m              == 60 mins
         $RoundedMinutes = 0
-    } elseif (($Minutes -gt 3) -and ($Minutes -le 18)) {
-        # round to 15
-        $RoundedMinutes = 15
-    } elseif (($Minutes -gt 18) -and ($Minutes -le 33)) {
-        # round to 30
-        $RoundedMinutes = 30
-    } elseif (($Minutes -gt 33) -and ($Minutes -le 48)) {
-        # round to 45
-        $RoundedMinutes = 45
-    } elseif ($Minutes -gt 48) {
-        # round to 60
-        $RoundedMinutes = 60
-    } else {
-        Write-Error "Something is catastrophically wrong.`n`t`$Minutes: $($Minutes)"
-    }
+        if ($Minutes -le 3) {
+            # round to 0
+            $RoundedMinutes = 0
+        } elseif (($Minutes -gt 3) -and ($Minutes -le 18)) {
+            # round to 15
+            $RoundedMinutes = 15
+        } elseif (($Minutes -gt 18) -and ($Minutes -le 33)) {
+            # round to 30
+            $RoundedMinutes = 30
+        } elseif (($Minutes -gt 33) -and ($Minutes -le 48)) {
+            # round to 45
+            $RoundedMinutes = 45
+        } elseif ($Minutes -gt 48) {
+            # round to 60
+            $RoundedMinutes = 60
+        } else {
+            Write-Error "Something is catastrophically wrong.`n`t`$Minutes: $($Minutes)"
+        }
 
-    # NOTE: this does not capture the net gain/loss of rounded minutes
-    $TimeDuration = New-TimeSpan -Hours $Hours -Minutes $RoundedMinutes
+        $Minutes = $RoundedMinutes
+    }
+    
+    $TimeDuration = New-TimeSpan -Hours $Hours -Minutes $Minutes
+    Write-Host "TIME DURATION: $TimeDuration"
     return $TimeDuration
 }
 
@@ -269,9 +279,9 @@ function Parse-DailyNoteLine{
 
         # Get the time entries section
         if ($Line -match $ClockFormatPattern -or $Line -match $DurationFormatPattern) {
-            #Write-Host "LINE: $Line"
+            Write-Host "LINE: $Line"
             $Sessions = $Line.Substring($Line.IndexOf($Matches.0), ($Line.Length - $Line.IndexOf($Matches.0))).Trim()
-            #Write-Host "SESSIONS: $Sessions"
+            Write-Host "SESSIONS: $Sessions"
             $Task.RawSessions = $Sessions
             
             # Get the title/description section
@@ -281,7 +291,9 @@ function Parse-DailyNoteLine{
 
         # Add up the time of the sessions
         $Task.CumulativeTime = Calculate-TimeElapsed -RawSessions $Task.RawSessions -ReturnDatetimeObject $true -Rounded $false
+        Write-Host "CUMULATIVE TIME: $($Task.CumulativeTime)"
         $Task.CumulativeRoundedTime = Calculate-TimeElapsed -RawSessions $Task.RawSessions -ReturnDatetimeObject $true
+        Write-Host "CUMULATIVE ROUNDED TIME: $($Task.CumulativeRoundedTime)"
 
         # Determine whether net gain
         $Task.RoundedMinutesOffset = Calculate-RoundedMinutesNet -RawSessions $Task.RawSessions
@@ -309,13 +321,13 @@ function Display-DailyNoteTask{
     }
     
     Write-Host "$($Task.Title) --> " -NoNewline
-    Write-Host "$($Task.CumulativeTime.Hours) hours $($Task.CumulativeTime.Minutes) minutes" -ForegroundColor Blue -NoNewline
-    Write-Host "$($Task.CumulativeRoundedTime.Hours) hours $($Task.CumulativeRoundedTime.Minutes) minutes" -ForegroundColor $ForegroundColor -NoNewline
+    Write-Host "$($Task.CumulativeTime.Hours) hours $($Task.CumulativeTime.Minutes) minutes " -ForegroundColor Blue -NoNewline
+    Write-Host "$($Task.CumulativeRoundedTime.Hours) hours $($Task.CumulativeRoundedTime.Minutes) minutes " -ForegroundColor $ForegroundColor -NoNewline
     if ($Task.RoundedMinutesOffset -ge 0) {
-        Write-Host "+$($Task.RoundedMinutesOffset)" -ForegroundColor Blue -NoNewline
+        Write-Host "$($PSStyle.Italic)+$($Task.RoundedMinutesOffset)$($PSStyle.ItalicOff) " -ForegroundColor Blue -NoNewline
     } else {
         # it's negative
-        Write-Host "$($Task.RoundedMinutesOffset)" -ForegroundColor Red -NoNewline
+        Write-Host "$($PSStyle.Italic)$($Task.RoundedMinutesOffset)$($PSStyle.ItalicOff) " -ForegroundColor Red -NoNewline
     }
     Write-Host "    (TICKET: $($Task.AcceloTicket); NOTES: $($Task.Notes))"
 }

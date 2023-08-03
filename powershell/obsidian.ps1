@@ -82,7 +82,7 @@ function Calculate-TimeElapsed {
             $CumulativeTime += $ElapsedSession
             $CumulativeRoundedTime += $RoundedSession
         } elseif ($Session -match $DurationFormatPattern) {
-            Write-Host "SESSION $Session matches DURATIONFORMAT"
+            #Write-Host "SESSION $Session matches DURATIONFORMAT"
             $ElapsedSession = Calculate-TimeDuration -RawSession $Session -Rounded $false
             $CumulativeTime += $ElapsedSession
 
@@ -124,7 +124,6 @@ function Calculate-TimeDuration {
     $Hours = 0
     $Minutes = 0
 
-    Write-Host $RawSession
     # Should be receiving it all as one string (e.g. 1hr; 35m; 1h47m)
     # Start out supporting only hours and minutes
     if ($RawSession -match "\d{1,}\s?h") {
@@ -164,7 +163,7 @@ function Calculate-TimeDuration {
     }
     
     $TimeDuration = New-TimeSpan -Hours $Hours -Minutes $Minutes
-    Write-Host "TIME DURATION: $TimeDuration"
+    #Write-Host "TIME DURATION: $TimeDuration"
     return $TimeDuration
 }
 
@@ -279,9 +278,9 @@ function Parse-DailyNoteLine{
 
         # Get the time entries section
         if ($Line -match $ClockFormatPattern -or $Line -match $DurationFormatPattern) {
-            Write-Host "LINE: $Line"
+            #Write-Host "LINE: $Line"
             $Sessions = $Line.Substring($Line.IndexOf($Matches.0), ($Line.Length - $Line.IndexOf($Matches.0))).Trim()
-            Write-Host "SESSIONS: $Sessions"
+            #Write-Host "SESSIONS: $Sessions"
             $Task.RawSessions = $Sessions
             
             # Get the title/description section
@@ -291,9 +290,9 @@ function Parse-DailyNoteLine{
 
         # Add up the time of the sessions
         $Task.CumulativeTime = Calculate-TimeElapsed -RawSessions $Task.RawSessions -ReturnDatetimeObject $true -Rounded $false
-        Write-Host "CUMULATIVE TIME: $($Task.CumulativeTime)"
+        #Write-Host "CUMULATIVE TIME: $($Task.CumulativeTime)"
         $Task.CumulativeRoundedTime = Calculate-TimeElapsed -RawSessions $Task.RawSessions -ReturnDatetimeObject $true
-        Write-Host "CUMULATIVE ROUNDED TIME: $($Task.CumulativeRoundedTime)"
+        #Write-Host "CUMULATIVE ROUNDED TIME: $($Task.CumulativeRoundedTime)"
 
         # Determine whether net gain
         $Task.RoundedMinutesOffset = Calculate-RoundedMinutesNet -RawSessions $Task.RawSessions

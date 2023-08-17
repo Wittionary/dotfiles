@@ -137,6 +137,9 @@ if [[ $(cat /etc/hostname) == "Monolith" ]]; then
     # when on Monolith
     GIT_PATH=/mnt/c/Users/Witt/Documents/GitHub
 elif [[ $(cat /etc/hostname) == "ubuntu-wsl" ]]; then
+    # when on STARMACHINE
+    GIT_PATH=/mnt/c/Users/qwert/Documents/git
+elif [[ $(cat /etc/hostname) == "ubuntu-wsl" ]]; then
     # when on work laptop
     GIT_PATH=/mnt/c/Users/WittAllen/git
 elif [[ $(cat /etc/hostname) == "hacktop" ]]; then

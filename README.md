@@ -24,6 +24,7 @@ use, and build on what you do use.
 ## install
 
 ### quick zsh setup
+- [ ] TODO: Update this. This is outdated. I think.
 ```sh
 # Overwrites existing .zshrc
 mv ~/.zshrc ~/.zshrc.bak;curl -fsSL https://raw.githubusercontent.com/Wittionary/dotfiles/main/zsh/.zshrc --output ~/.zshrc;source ~/.zshrc

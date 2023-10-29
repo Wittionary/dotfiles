@@ -300,6 +300,14 @@ function Parse-DailyNoteLine{
         # Determine which Accelo ticket it might go towards
         $Task.AcceloTicket = Get-AcceloTicketOptions -Description "$($Task.Title) $($Task.Notes)"
         
+        # Get "Client" property from linked notes
+        if ($Task.Title -match "\[\[") {
+            $Task.Client = Get-NotePropertyValue -NotePath $(Get-NoteLocation -NoteName $($Task.Title))
+        } else {
+            # it's an un-linked note and probably internal
+            $Task.Client = "internal"
+        }
+        
         
         return $Task
 }
@@ -320,7 +328,7 @@ function Display-DailyNoteTask{
     }
     
     Write-Host "$($Task.Title) --> " -NoNewline
-    Write-Host "$($Task.CumulativeTime.Hours) hours $($Task.CumulativeTime.Minutes) minutes " -ForegroundColor Blue -NoNewline
+    #Write-Host "$($Task.CumulativeTime.Hours) hours $($Task.CumulativeTime.Minutes) minutes " -ForegroundColor Blue -NoNewline
     Write-Host "$($Task.CumulativeRoundedTime.Hours) hours $($Task.CumulativeRoundedTime.Minutes) minutes " -ForegroundColor $ForegroundColor -NoNewline
     if ($Task.RoundedMinutesOffset -ge 0) {
         Write-Host "$($PSStyle.Italic)+$($Task.RoundedMinutesOffset)$($PSStyle.ItalicOff) " -ForegroundColor Blue -NoNewline
@@ -328,7 +336,7 @@ function Display-DailyNoteTask{
         # it's negative
         Write-Host "$($PSStyle.Italic)$($Task.RoundedMinutesOffset)$($PSStyle.ItalicOff) " -ForegroundColor Red -NoNewline
     }
-    Write-Host "    (TICKET: $($Task.AcceloTicket); NOTES: $($Task.Notes))"
+    Write-Host "    (CLIENT: $($Task.Client); TICKET: $($Task.AcceloTicket); NOTES: $($Task.Notes))"
 }
 
 function Calculate-RoundedMinutesNet {
@@ -348,4 +356,61 @@ function Calculate-RoundedMinutesNet {
     $NetGainOrLoss = $NetGainOrLoss.Minutes + 1 # off by one
 
     return $NetGainOrLoss
+}
+
+# returns the value of a specified key within a specified note
+function Get-NotePropertyValue {
+    param (
+        [ValidateScript({Test-Path $_, "Note not found at $_"})]
+        [String]
+        $NotePath = "",
+
+        [regex]
+        $Property = "\*\*Client\*\* ::",
+        
+        [bool]
+        $Debug = $false
+    )
+    
+    if ($NotePath -eq "") {
+        return "no client found"
+    }
+
+    $Content = Get-Content $NotePath
+    $Result = $Content -match $Property
+
+    if (($null -eq $Result) -or ("" -eq $Result)) {
+        #throw "No value for the property `'$Property`'"
+        return ""
+    }
+
+    $Value = $Result.split("::")[1].trim()
+    if ($Debug) {Write-Host "VALUE OF PROPERTY `'$Property`': $Value"}
+    return $Value
+}
+
+# return filepath of a note given it's in the format "[[note]]"
+function Get-NoteLocation {
+    param (
+        [ValidateScript({Test-Path $_, "Note not found at $_"})]
+        [String]
+        $VaultLocation = "$env:git\obsidian-vaults\notey-notes\",
+
+        [String] # make required
+        $NoteName,
+        
+        [bool]
+        $Debug = $false
+    )
+    $NoteName = $NoteName.Replace("[[","").Replace("]]","")
+    $NotePath = Get-Item -Path "$VaultLocation\*\${NoteName}.md"
+
+    if ($null -eq $NotePath) {
+        $NotePath = Get-Item -Path "$VaultLocation\${NoteName}.md"
+    } elseif ($null -eq $NotePath) {
+        $NotePath = Get-Item -Path "$VaultLocation\*\*\${NoteName}.md"
+    }
+    if ($Debug) {Write-Host "NOTEPATH: $NotePath"}
+
+    return $NotePath.FullName
 }

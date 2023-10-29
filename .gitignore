@@ -2,3 +2,5 @@ git/gitconfig.local.symlink
 
 # Just there for reference but I want the syntax highlighting
 vivaldi/common.css
+
+accelo.config

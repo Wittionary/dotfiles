@@ -414,3 +414,12 @@ function Get-NoteLocation {
 
     return $NotePath.FullName
 }
+
+function Get-AcceloToken {
+    $headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
+    $headers.Add("Authorization", "Basic $($(Get-Content -Path "./powershell/accelo.config").split("basictoken:")[1].trim())")
+
+    $response = Invoke-RestMethod 'https://provisionsgroup.api.accelo.com/oauth2/v0/token?grant_type=client_credentials&scope=read(all)' -Method 'POST' -Headers $headers
+    
+    return $response #| ConvertTo-Json
+}

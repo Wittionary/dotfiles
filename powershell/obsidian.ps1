@@ -305,7 +305,8 @@ function Parse-DailyNoteLine{
             $Task.Client = Get-NotePropertyValue -NotePath $(Get-NoteLocation -NoteName $($Task.Title))
         } else {
             # it's an un-linked note and probably internal
-            $Task.Client = "internal"
+            #$Task.Client = "internal"
+            $Task.Client = "unknown"
         }
         
         
@@ -336,7 +337,17 @@ function Display-DailyNoteTask{
         # it's negative
         Write-Host "$($PSStyle.Italic)$($Task.RoundedMinutesOffset)$($PSStyle.ItalicOff) " -ForegroundColor Red -NoNewline
     }
-    Write-Host "    (CLIENT: $($Task.Client); TICKET: $($Task.AcceloTicket); NOTES: $($Task.Notes))"
+
+    # Ticket/task details
+    Write-Host "        (CLIENT: " -NoNewline
+    if (("unknown" -eq $Task.Client) -or ("" -eq $Task.Client)) {
+        # client is not confirmed
+        Write-Host "$($Task.Client)" -ForegroundColor Yellow -NoNewline
+    } else {
+        Write-Host "$($Task.Client)" -NoNewline # Why is this color always being inherited?
+    }
+    Write-Host ";)"
+    
 }
 
 function Calculate-RoundedMinutesNet {

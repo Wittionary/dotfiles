@@ -171,3 +171,10 @@ source /usr/share/autojump/autojump.sh
 source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh 2>/dev/null
 # add Pulumi to the PATH
 export PATH=$PATH:$HOME/.pulumi/bin
+
+# bun completions
+[ -s "/home/witt/.bun/_bun" ] && source "/home/witt/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"

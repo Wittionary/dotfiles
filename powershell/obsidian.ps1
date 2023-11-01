@@ -286,6 +286,20 @@ function Parse-DailyNoteLine{
             # Get the title/description section
             $Task.Title = $Line.Substring(0, $Line.IndexOf($Matches.0)).Trim()
             #Write-Host "TITLE: $($Task.Title)"
+
+            # Get the filename from the title if there's a [[link]]
+            if ($Task.Title.Contains("[[") -and $Task.Title.Contains("]]")) {
+                $Task.Filename = $Task.Title.Split("[[")[1]
+                $Task.Filename = $Task.Filename.Split("]]")[0]
+
+                if ($Task.Filename.Contains("|")) {
+                    $Task.Filename = $Task.Filename.Split("|")[0]
+                }
+            } else {
+                # no Obisidian link present
+                $Task.Filename = ""
+            }
+            #Write-Host "FILENAME: $($Task.Filename)"
         }
 
         # Add up the time of the sessions
@@ -301,8 +315,8 @@ function Parse-DailyNoteLine{
         $Task.AcceloTicket = Get-AcceloTicketOptions -Description "$($Task.Title) $($Task.Notes)"
         
         # Get "Client" property from linked notes
-        if ($Task.Title -match "\[\[") {
-            $Task.Client = Get-NotePropertyValue -NotePath $(Get-NoteLocation -NoteName $($Task.Title))
+        if ($Task.Title.Contains("[[") -and $Task.Title.Contains("]]")) {
+            $Task.Client = Get-NotePropertyValue -NotePath $(Get-NoteLocation -NoteName $($Task.Filename))
         } else {
             # it's an un-linked note and probably internal
             #$Task.Client = "internal"

@@ -440,11 +440,44 @@ function Get-NoteLocation {
     return $NotePath.FullName
 }
 
-function Get-AcceloToken {
-    $headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
-    $headers.Add("Authorization", "Basic $($(Get-Content -Path "./powershell/accelo.config").split("basictoken:")[1].trim())")
+# ---------------- ACCELO SECTION ----------------
+$DeploymentSubdomain = "provisionsgroup"
+$BaseUri = "https://$DeploymentSubdomain.api.accelo.com/api/v0"
+#$BearerToken = Get-AcceloToken # comment out while not in active use
 
-    $response = Invoke-RestMethod 'https://provisionsgroup.api.accelo.com/oauth2/v0/token?grant_type=client_credentials&scope=read(all)' -Method 'POST' -Headers $headers
+function Get-AcceloToken {
+    $Headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
+    $Headers.Add("Authorization", "Basic $($(Get-Content -Path "./powershell/accelo.config").split("basictoken:")[1].trim())")
+
+    # expires_in=86400 == 24 hours
+    $Response = Invoke-RestMethod "https://$DeploymentSubdomain.api.accelo.com/oauth2/v0/token?grant_type=client_credentials&scope=read(all)&expires_in=86400" -Method 'POST' -Headers $Headers
+
+    return $Response.Access_Token #| ConvertTo-Json
+}
+
+function Find-AcceloCompany {
+    param (
+        [Parameter()]
+        [string]
+        $Company = "Provisions Group"
+    )
+    $Headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
+    $Company = $Company.Replace(" ","+")
+
+    $Response = Invoke-RestMethod "$BaseUri/companies?_bearer_token=$BearerToken&_search=$Company&_fields=name,id,company_status&_limit=3" -Method 'POST' -Headers $Headers
+    if ($Response.Meta.Status -ne "ok") {
+        Write-Host "Response Status: $($Response.Meta.Status)`n`tMessage: $($Response.Meta.Message)`n`tLink: $($Response.Meta.More_Info)"
+    }
+    Write-Host "$($Response.Response.Count) result(s) found"
+
+    # active companies
+    $ActiveCompanies = $Response.Response | Where-Object {$_.Company_status -eq "3"}
+    # TODO: if multiple, Return the mostly likely result
+    if ($ActiveCompanies.Count -gt 1) {
+        Write-Host "$($ActiveCompanies.Count) active companies found.`n`t$($ActiveCompanies)"
+        return $null
+    }
     
-    return $response #| ConvertTo-Json
+    Write-Host "Returning $($ActiveCompanies.name) ($($ActiveCompanies.id))"
+    return $ActiveCompanies
 }

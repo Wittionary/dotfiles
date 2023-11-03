@@ -316,13 +316,28 @@ function Parse-DailyNoteLine{
         
         # Get "Client" property from linked notes
         if ($Task.Title.Contains("[[") -and $Task.Title.Contains("]]")) {
-            $Task.Client = Get-NotePropertyValue -NotePath $(Get-NoteLocation -NoteName $($Task.Filename))
+            $Task.Client = Get-NotePropertyValue -NotePath $(Get-NoteLocation -NoteName $($Task.Filename)) -Property "Client"
+        } elseif ($Task.Title -eq $($Task.Title).ToUpper()) {
+            # all caps = abbreviated client... probably
+            $Task.Client = "unknown"
         } else {
             # it's an un-linked note and probably internal
-            #$Task.Client = "internal"
-            $Task.Client = "unknown"
+            $Task.Client = "internal"
+            
+        }
+
+        # Get possible Accelo company corresponding to the client
+        if ($Task.Client -eq "internal") {
+            $Temp = Find-AcceloCompany -Company "provisions group"    
+        } else {
+            $Temp = Find-AcceloCompany -Company $Task.Client
         }
         
+        if ($null -eq $Temp) {
+            $Task.AcceloCompany = "2 or more found"
+        } else {
+            $Task.AcceloCompany = $Temp
+        }
         
         return $Task
 }
@@ -358,7 +373,7 @@ function Display-DailyNoteTask{
         # client is not confirmed
         Write-Host "$($Task.Client)" -ForegroundColor Yellow -NoNewline
     } else {
-        Write-Host "$($Task.Client)" -NoNewline # Why is this color always being inherited?
+        Write-Host "$($Task.AcceloCompany.name) ($($Task.AcceloCompany.id))" -NoNewline
     }
     Write-Host ";)"
     
@@ -390,12 +405,13 @@ function Get-NotePropertyValue {
         [String]
         $NotePath = "",
 
-        [regex]
+        [string]
         $Property = "\*\*Client\*\* ::",
         
         [bool]
         $Debug = $false
     )
+    [regex]$Property = "\*\*$Property\*\* ::"
     
     if ($NotePath -eq "") {
         return "no client found"
@@ -406,7 +422,7 @@ function Get-NotePropertyValue {
 
     if (($null -eq $Result) -or ("" -eq $Result)) {
         #throw "No value for the property `'$Property`'"
-        return ""
+        return "no value"
     }
 
     $Value = $Result.split("::")[1].trim()
@@ -443,7 +459,7 @@ function Get-NoteLocation {
 # ---------------- ACCELO SECTION ----------------
 $DeploymentSubdomain = "provisionsgroup"
 $BaseUri = "https://$DeploymentSubdomain.api.accelo.com/api/v0"
-#$BearerToken = Get-AcceloToken # comment out while not in active use
+$BearerToken = Get-AcceloToken # comment out while not in active use
 
 function Get-AcceloToken {
     $Headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
@@ -463,21 +479,25 @@ function Find-AcceloCompany {
     )
     $Headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
     $Company = $Company.Replace(" ","+")
-
-    $Response = Invoke-RestMethod "$BaseUri/companies?_bearer_token=$BearerToken&_search=$Company&_fields=name,id,company_status&_limit=3" -Method 'POST' -Headers $Headers
-    if ($Response.Meta.Status -ne "ok") {
-        Write-Host "Response Status: $($Response.Meta.Status)`n`tMessage: $($Response.Meta.Message)`n`tLink: $($Response.Meta.More_Info)"
+    
+    if ($Company -eq "unknown") {
+        return ""
     }
-    Write-Host "$($Response.Response.Count) result(s) found"
+
+    $Response = Invoke-RestMethod "$BaseUri/companies?_bearer_token=$BearerToken&_search=$Company&_fields=name,id,company_status&_limit=3" -Method 'GET' -Headers $Headers
+    if ($Response.Meta.Status -ne "ok") {
+        Write-Error "Response Status: $($Response.Meta.Status)`n`tMessage: $($Response.Meta.Message)`n`tLink: $($Response.Meta.More_Info)"
+    }
+    #Write-Host "$($Response.Response.Count) result(s) found"
 
     # active companies
     $ActiveCompanies = $Response.Response | Where-Object {$_.Company_status -eq "3"}
     # TODO: if multiple, Return the mostly likely result
     if ($ActiveCompanies.Count -gt 1) {
-        Write-Host "$($ActiveCompanies.Count) active companies found.`n`t$($ActiveCompanies)"
+        Write-Warning "$($ActiveCompanies.Count) active companies found.`n`t$($ActiveCompanies)"
         return $null
     }
     
-    Write-Host "Returning $($ActiveCompanies.name) ($($ActiveCompanies.id))"
+    #Write-Host "Returning $($ActiveCompanies.name) ($($ActiveCompanies.id))"
     return $ActiveCompanies
 }

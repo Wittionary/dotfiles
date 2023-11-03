@@ -317,7 +317,7 @@ function Parse-DailyNoteLine{
         # Get "Client" property from linked notes
         if ($Task.Title.Contains("[[") -and $Task.Title.Contains("]]")) {
             $Task.Client = Get-NotePropertyValue -NotePath $(Get-NoteLocation -NoteName $($Task.Filename)) -Property "Client"
-        } elseif ($Task.Title -eq $($Task.Title).ToUpper()) {
+        } elseif ($Task.Title.CompareTo($($Task.Title).ToUpper()) + 1) {
             # all caps = abbreviated client... probably
             $Task.Client = "unknown"
         } else {
@@ -338,6 +338,12 @@ function Parse-DailyNoteLine{
         } else {
             $Task.AcceloCompany = $Temp
         }
+
+        # Get Accelo URL
+        $Temp = Get-NotePropertyValue -NotePath $(Get-NoteLocation -NoteName $($Task.Filename)) -Property "URL"
+        # un-markdownify
+        $Task.Url = $Temp.Split("](")[1].TrimEnd(")")
+        
         
         return $Task
 }
@@ -500,4 +506,20 @@ function Find-AcceloCompany {
     
     #Write-Host "Returning $($ActiveCompanies.name) ($($ActiveCompanies.id))"
     return $ActiveCompanies
+}
+
+function Parse-AcceloUrl {
+    param (
+        $Url = "https://provisionsgroup.accelo.com/?action=view_task&id=15221"
+    )
+    $Headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
+    $Path = $Url.Split("https://$DeploymentSubdomain.accelo.com")[1]
+    $Id = $Path.Split("&id=")[1]
+
+    $Response = Invoke-RestMethod "$BaseUri/tasks?_bearer_token=$BearerToken&_search=$Company&_fields=id,title,against,assignee,task_status&_filters=date_modified_after=(1696016228),id($Id)" -Method 'GET' -Headers $Headers
+    if ($Response.Meta.Status -ne "ok") {
+        Write-Error "Response Status: $($Response.Meta.Status)`n`tMessage: $($Response.Meta.Message)`n`tLink: $($Response.Meta.More_Info)"
+    }
+
+    return $Response
 }

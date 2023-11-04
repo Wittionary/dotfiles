@@ -205,6 +205,14 @@ function Process-DailyNote {
 
     $Tasks = @()
     foreach ($Line in $DailyNoteContent) {
+        # Write Progress
+        $progressOptions = @{
+            Activity         = "Parsing daily note..."
+            PercentComplete  = ($DailyNoteContent.IndexOf($Line) + 1) / ($DailyNoteContent.Length + 1) * 100
+        }
+        #Write-Host "NUMERATOR: $($DailyNoteContent.IndexOf($Line) + 1)`nDENOMINATOR: $($DailyNoteContent.Length + 1)"
+        Write-Progress @progressOptions
+
         $Task = Parse-DailyNoteLine -Line $Line
         $Tasks += $Task
     }
@@ -319,7 +327,13 @@ function Parse-DailyNoteLine{
             $Task.Client = Get-NotePropertyValue -NotePath $(Get-NoteLocation -NoteName $($Task.Filename)) -Property "Client"
         } elseif ($Task.Title.CompareTo($($Task.Title).ToUpper()) + 1) {
             # all caps = abbreviated client... probably
-            $Task.Client = "unknown"
+            $Expansion = Expand-Abbreviation -Abbreviation $Task.Title
+            if ($null -eq $Expansion) {
+                $Task.Client = "unknown"
+            } else {
+                $Task.Client = $Expansion
+            }
+            
         } else {
             # it's an un-linked note and probably internal
             $Task.Client = "internal"
@@ -341,9 +355,13 @@ function Parse-DailyNoteLine{
 
         # Get Accelo URL
         $Temp = Get-NotePropertyValue -NotePath $(Get-NoteLocation -NoteName $($Task.Filename)) -Property "URL"
+        #Write-Host "TEMP TASK URL: $Temp"
         # un-markdownify
-        $Task.Url = $Temp.Split("](")[1].TrimEnd(")")
-        
+        if (($null -eq $Temp) -or ("" -eq $Temp)) {
+            $Task.Url = ""
+        } else {
+            $Task.Url = $Temp.Split("](")[1].TrimEnd(")")
+        }        
         
         return $Task
 }
@@ -412,7 +430,7 @@ function Get-NotePropertyValue {
         $NotePath = "",
 
         [string]
-        $Property = "\*\*Client\*\* ::",
+        $Property = "Client",
         
         [bool]
         $Debug = $false
@@ -420,7 +438,7 @@ function Get-NotePropertyValue {
     [regex]$Property = "\*\*$Property\*\* ::"
     
     if ($NotePath -eq "") {
-        return "no client found"
+        return ""
     }
 
     $Content = Get-Content $NotePath
@@ -428,7 +446,8 @@ function Get-NotePropertyValue {
 
     if (($null -eq $Result) -or ("" -eq $Result)) {
         #throw "No value for the property `'$Property`'"
-        return "no value"
+        #Write-Host "PROPERTY `"$Property`" not found"
+        return ""
     }
 
     $Value = $Result.split("::")[1].trim()
@@ -463,9 +482,6 @@ function Get-NoteLocation {
 }
 
 # ---------------- ACCELO SECTION ----------------
-$DeploymentSubdomain = "provisionsgroup"
-$BaseUri = "https://$DeploymentSubdomain.api.accelo.com/api/v0"
-$BearerToken = Get-AcceloToken # comment out while not in active use
 
 function Get-AcceloToken {
     $Headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
@@ -516,10 +532,69 @@ function Parse-AcceloUrl {
     $Path = $Url.Split("https://$DeploymentSubdomain.accelo.com")[1]
     $Id = $Path.Split("&id=")[1]
 
-    $Response = Invoke-RestMethod "$BaseUri/tasks?_bearer_token=$BearerToken&_search=$Company&_fields=id,title,against,assignee,task_status&_filters=date_modified_after=(1696016228),id($Id)" -Method 'GET' -Headers $Headers
+    $Response = Invoke-RestMethod "$BaseUri/tasks?_bearer_token=$BearerToken&_search=$Company`
+                &_fields=id,title,against,assignee,task_status`
+                &_filters=date_modified_after=(1696016228),id($Id)" -Method 'GET' -Headers $Headers
     if ($Response.Meta.Status -ne "ok") {
         Write-Error "Response Status: $($Response.Meta.Status)`n`tMessage: $($Response.Meta.Message)`n`tLink: $($Response.Meta.More_Info)"
     }
 
     return $Response
 }
+
+function  Expand-Abbreviation {
+    param (
+        [string]
+        $Abbreviation = ""
+    )
+    $AbbreviationList = @{
+        CMHOF = "Country Music Hall of Fame"
+        DH = "Decode Health"
+        FP = "Fast Pace"
+        GC = "GenesisCare"
+        HMG = "Honest Medical Group"
+        NP = "Neural Payments"
+        NSC = "National Safety Council"
+        OH = "Objective Health"
+        OJ = "Objective Health"
+        OLC = "Online Learning Consortium"
+        PCTEL = "PCTEL"
+        PG = "Provisions Group"
+        'S&J' = "Steptoe & Johnson"
+        SC = "Skin Clique"
+        SJ = "Steptoe & Johnson"
+        SOS= "Store Opening Solutions"
+        SP = "Surgery Partners"
+        VA = "V. Alexander"
+    }
+    #Write-Host "ABBREVIATION: $Abbreviation"
+    $Expansion = $AbbreviationList[$Abbreviation]
+    
+    return $Expansion
+}
+
+function Create-AcceloActivity {
+    param (
+        $Subject,
+        $AgainstType,
+        $AgainstId,
+        $Body
+    )
+
+    $Headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
+    $Company = $Company.Replace(" ","+")
+    
+    if ($Company -eq "unknown") {
+        return ""
+    }
+
+    $Response = Invoke-RestMethod "$BaseUri/companies?_bearer_token=$BearerToken&_search=$Company&_fields=name,id,company_status&_limit=3" -Method 'GET' -Headers $Headers
+    if ($Response.Meta.Status -ne "ok") {
+        Write-Error "Response Status: $($Response.Meta.Status)`n`tMessage: $($Response.Meta.Message)`n`tLink: $($Response.Meta.More_Info)"
+    }
+
+}
+
+$DeploymentSubdomain = "provisionsgroup"
+$BaseUri = "https://$DeploymentSubdomain.api.accelo.com/api/v0"
+$BearerToken = Get-AcceloToken # comment out while not in active use

@@ -485,7 +485,7 @@ function Get-NoteLocation {
 
 function Get-AcceloToken {
     $Headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
-    $Headers.Add("Authorization", "Basic $($(Get-Content -Path "./powershell/accelo.config").split("basictoken:")[1].trim())")
+    $Headers.Add("Authorization", "Basic $($(Get-Content -Path "$env:git/dotfiles/powershell/accelo.config").split("basictoken:")[1].trim())")
 
     # expires_in=86400 == 24 hours
     $Response = Invoke-RestMethod "https://$DeploymentSubdomain.api.accelo.com/oauth2/v0/token?grant_type=client_credentials&scope=read(all)&expires_in=86400" -Method 'POST' -Headers $Headers

@@ -323,45 +323,58 @@ function Parse-DailyNoteLine{
         $Task.AcceloTicket = Get-AcceloTicketOptions -Description "$($Task.Title) $($Task.Notes)"
         
         # Get "Client" property from linked notes
-        if ($Task.Title.Contains("[[") -and $Task.Title.Contains("]]")) {
-            $Task.Client = Get-NotePropertyValue -NotePath $(Get-NoteLocation -NoteName $($Task.Filename)) -Property "Client"
-        } elseif ($Task.Title.CompareTo($($Task.Title).ToUpper()) + 1) {
-            # all caps = abbreviated client... probably
-            $Expansion = Expand-Abbreviation -Abbreviation $Task.Title
-            if ($null -eq $Expansion) {
-                $Task.Client = "unknown"
+        if ($Task.Status -eq "incomplete") {
+            if ($Task.Title.Contains("[[") -and $Task.Title.Contains("]]")) {
+                $Task.Client = Get-NotePropertyValue -NotePath $(Get-NoteLocation -NoteName $($Task.Filename)) -Property "Client"
+            } elseif ($Task.Title.CompareTo($($Task.Title).ToUpper()) + 1) {
+                # all caps = abbreviated client... probably
+                $Expansion = Expand-Abbreviation -Abbreviation $Task.Title
+                if ($null -eq $Expansion) {
+                    $Task.Client = "unknown"
+                } else {
+                    $Task.Client = $Expansion
+                }
+                
             } else {
-                $Task.Client = $Expansion
+                # it's an un-linked note and probably internal
+                $Task.Client = "internal"
             }
-            
         } else {
-            # it's an un-linked note and probably internal
-            $Task.Client = "internal"
-            
+            $Task.Client = ""
         }
 
         # Get possible Accelo company corresponding to the client
-        if ($Task.Client -eq "internal") {
-            $Temp = Find-AcceloCompany -Company "provisions group"    
+        if ($Task.Status -eq "incomplete") {
+            if ($Task.Client -eq "internal") {
+                $Temp = Find-AcceloCompany -Company "provisions group"    
+            } else {
+                $Temp = Find-AcceloCompany -Company $Task.Client
+            }
+            
+            if ($null -eq $Temp) {
+                $Task.AcceloCompany = "2 or more found"
+            } else {
+                $Task.AcceloCompany = $Temp
+            }
         } else {
-            $Temp = Find-AcceloCompany -Company $Task.Client
-        }
-        
-        if ($null -eq $Temp) {
-            $Task.AcceloCompany = "2 or more found"
-        } else {
-            $Task.AcceloCompany = $Temp
+            # speeds up script for tasks I've already entered
+            $Task.AcceloCompany = $null
         }
 
+
         # Get Accelo URL
-        $Temp = Get-NotePropertyValue -NotePath $(Get-NoteLocation -NoteName $($Task.Filename)) -Property "URL"
-        #Write-Host "TEMP TASK URL: $Temp"
-        # un-markdownify
-        if (($null -eq $Temp) -or ("" -eq $Temp)) {
-            $Task.Url = ""
+        if ($Task.Status -eq "incomplete") {
+            $Temp = Get-NotePropertyValue -NotePath $(Get-NoteLocation -NoteName $($Task.Filename)) -Property "URL"
+            #Write-Host "TEMP TASK URL: $Temp"
+            # un-markdownify
+            if (($null -eq $Temp) -or ("" -eq $Temp)) {
+                $Task.Url = ""
+            } else {
+                $Task.Url = $Temp.Split("](")[1].TrimEnd(")")
+            }
         } else {
-            $Task.Url = $Temp.Split("](")[1].TrimEnd(")")
-        }        
+            $Task.Url = ""
+        }
         
         return $Task
 }

@@ -501,7 +501,8 @@ function Get-AcceloToken {
     $Headers.Add("Authorization", "Basic $($(Get-Content -Path "$env:git/dotfiles/powershell/accelo.config").split("basictoken:")[1].trim())")
 
     # expires_in=86400 == 24 hours
-    $Response = Invoke-RestMethod "https://$DeploymentSubdomain.api.accelo.com/oauth2/v0/token?grant_type=client_credentials&scope=read(all)&expires_in=86400" -Method 'POST' -Headers $Headers
+    # 432000 == 5 days
+    $Response = Invoke-RestMethod "https://$DeploymentSubdomain.api.accelo.com/oauth2/v0/token?grant_type=client_credentials&scope=read(all)&expires_in=432000" -Method 'POST' -Headers $Headers
 
     return $Response.Access_Token #| ConvertTo-Json
 }

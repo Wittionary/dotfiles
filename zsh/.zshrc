@@ -39,6 +39,7 @@ HISTFILE=~/.cache/zsh/history # So that it's not living in ~/.history, this neat
 setopt INC_APPEND_HISTORY # each line is appended to the history as it is executed
 setopt EXTENDED_HISTORY # makes the format of the history entry more complicated: "history -fdD" vs "history"
 setopt HIST_IGNORE_DUPS HIST_EXPIRE_DUPS_FIRST # space savers and clarity makers
+setopt INTERACTIVE_COMMENTS # don't process '#' in the terminal
 
 # ALIASES ---------------------------
 alias cls=clear

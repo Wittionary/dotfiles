@@ -9,7 +9,7 @@ function Get-WordOfTheDay {
     $WordnikApiKey = "$env:WordnikApiKey"
 
     $Headers = @{"Accept" = "application/json"}
-    $Response = Invoke-WebRequest -Uri "https://api.wordnik.com/v4/words.json/wordOfTheDay?api_key=$WordnikApiKey" -Headers $Headers -Method Get | ConvertFrom-Json
+    $Response = Invoke-WebRequest -Uri "https://api.wordnik.com/v4/words.json/wordOfTheDay?api_key=$WordnikApiKey" -Headers $Headers -Method Get -ErrorAction Stop | ConvertFrom-Json
     $Word = $Response.Word
     $Definitions = $Response.Definitions
 

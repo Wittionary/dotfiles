@@ -9,15 +9,6 @@ https://devblogs.microsoft.com/scripting/understanding-the-six-powershell-profil
 #>
 Clear-Host
 
-# Load all modules in this directory
-try {
-    $Functions = Get-ChildItem -Path "$ENV:git\dotfiles\powershell\*.ps1" | Where-Object {$_.Name -ne "profile.ps1"}
-    foreach ($Function in $Functions) {
-        Import-Module -Name $Function.FullName -Force
-    }
-    Set-Location -Path $ENV:git
-    Test-EnvVariables
-    #Get-WordOfTheDay
-} catch {
-    Write-Error "Functions not imported. '`$ENV:git' value of '$ENV:git' is not valid."
-}
+Set-Location -Path $ENV:git
+Test-EnvVariables
+#Get-WordOfTheDay

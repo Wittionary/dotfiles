@@ -1,4 +1,5 @@
 git/gitconfig.local.symlink
+*.nupkg
 
 # Just there for reference but I want the syntax highlighting
 vivaldi/common.css

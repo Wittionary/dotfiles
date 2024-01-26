@@ -564,9 +564,11 @@ function  Expand-Abbreviation {
     $AbbreviationList = @{
         CMHOF = "Country Music Hall of Fame"
         DH = "Decode Health"
+        FF = "First Farmers"
         FP = "Fast Pace"
         GC = "GenesisCare"
         HMG = "Honest Medical Group"
+        IP = "IntegraPark"
         NP = "Neural Payments"
         NSC = "National Safety Council"
         OH = "Objective Health"

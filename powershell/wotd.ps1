@@ -1,3 +1,30 @@
+<#PSScriptInfo
+
+.VERSION 1.0.2
+
+.GUID d32961e6-9c2f-4bfa-a474-ebecf6b7edf1
+
+.AUTHOR Witt Allen
+
+.TAGS dictionary, word of the day, wordnik
+
+.LICENSEURI 
+
+.PROJECTURI https://github.com/wittionary/dotfiles/powershell
+
+.RELEASENOTES
+### 1.0.2
+- Removed unneccesary metadata.
+
+#>
+<#
+
+.DESCRIPTION
+Returns the word of the day using the Wordnik API.
+
+#>
+
+
 # Word of the Day
 function Get-WordOfTheDay {
     param (

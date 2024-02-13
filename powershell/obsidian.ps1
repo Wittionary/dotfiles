@@ -576,6 +576,7 @@ function  Expand-Abbreviation {
         OJ = "Objective Health"
         OLC = "Online Learning Consortium"
         PCTEL = "PCTEL"
+        PFC = "ProCreate Fertility Clinic"
         PG = "Provisions Group"
         'S&J' = "Steptoe & Johnson"
         SC = "Skin Clique"

@@ -208,7 +208,7 @@ function Process-DailyNote {
         # Write Progress
         $progressOptions = @{
             Activity         = "Parsing daily note..."
-            CurrentOperation = "$($Line.Substring(6,50))..."
+            CurrentOperation = "$($Line.Substring(6,($Line.Length - 7)))..."
             PercentComplete  = ($DailyNoteContent.IndexOf($Line) + 1) / ($DailyNoteContent.Length + 1) * 100
         }
         #Write-Host "NUMERATOR: $($DailyNoteContent.IndexOf($Line) + 1)`nDENOMINATOR: $($DailyNoteContent.Length + 1)"

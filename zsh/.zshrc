@@ -138,7 +138,7 @@ source <(kubectl completion zsh) # kubectl completion
 if [[ $(cat /etc/hostname) == "Monolith" ]]; then
     # when on Monolith
     GIT_PATH=/mnt/c/Users/Witt/Documents/GitHub
-elif [[ $(cat /etc/hostname) == "ubuntu-wsl" ]]; then
+elif [[ $(cat /etc/hostname) == "STARMACHINE" ]]; then
     # when on STARMACHINE
     GIT_PATH=/mnt/c/Users/qwert/Documents/git
 elif [[ $(cat /etc/hostname) == "ubuntu-wsl" ]]; then

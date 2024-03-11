@@ -5,3 +5,4 @@
 zsh/* text eol=lf
 wsl/* text eol=lf
 vim/* text eol=lf
+vim/colors/* text eol=lf

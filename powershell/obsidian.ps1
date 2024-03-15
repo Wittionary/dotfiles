@@ -239,6 +239,8 @@ function Get-AcceloTicketOptions{
         $Description
     )
 
+    Get-NotePropertyValue -NotePath $(Get-NoteLocation -NoteName $($Task.Filename)) -Property "URL"
+
     switch -Regex ($Description) {
         "training" { return "training"; break} # Internal - Professional Dev/Training
         "learning" { return "training"; break}
@@ -321,7 +323,8 @@ function Parse-DailyNoteLine{
         $Task.RoundedMinutesOffset = Calculate-RoundedMinutesNet -RawSessions $Task.RawSessions
 
         # Determine which Accelo ticket it might go towards
-        $Task.AcceloTicket = Get-AcceloTicketOptions -Description "$($Task.Title) $($Task.Notes)"
+        # $Task.AcceloTicket = Get-AcceloTicketOptions -Description "$($Task.Title) $($Task.Notes)"
+        $Task.AcceloTicket = Get-NotePropertyValue -NotePath $(Get-NoteLocation -NoteName $($Task.Filename)) -Property "URL"
         
         # Get "Client" property from linked notes
         if ($Task.Status -eq "incomplete") {
@@ -495,6 +498,41 @@ function Get-NoteLocation {
     return $NotePath.FullName
 }
 
+function  Expand-Abbreviation {
+    param (
+        [string]
+        $Abbreviation = ""
+    )
+    $AbbreviationList = @{
+        CMHOF = "Country Music Hall of Fame"
+        DH = "Decode Health"
+        FF = "First Farmers"
+        FP = "Fast Pace"
+        GC = "GenesisCare"
+        HMG = "Honest Medical Group"
+        IP = "IntegraPark"
+        NP = "Neural Payments"
+        NSC = "National Safety Council"
+        OH = "Objective Health"
+        OJ = "Objective Health"
+        OLC = "Online Learning Consortium"
+        PCTEL = "PCTEL"
+        PFC = "ProCreate Fertility Clinic"
+        PG = "Provisions Group"
+        'S&J' = "Steptoe & Johnson"
+        SC = "Skin Clique"
+        SJ = "Steptoe & Johnson"
+        SOS= "Store Opening Solutions"
+        SP = "Surgery Partners"
+        VA = "V. Alexander"
+    }
+    #Write-Host "ABBREVIATION: $Abbreviation"
+    $Expansion = $AbbreviationList[$Abbreviation]
+    
+    return $Expansion
+}
+
+
 # ---------------- ACCELO SECTION ----------------
 
 function Get-AcceloToken {
@@ -539,9 +577,23 @@ function Find-AcceloCompany {
     return $ActiveCompanies
 }
 
+function Get-EpochDate {
+    param(
+        [Int64]
+        $DaysAgo = 30
+    )
+    # Make it negative
+    $DaysAgo = $DaysAgo * -1 
+
+    return [int](New-TimeSpan -Start (Get-Date "01/01/1970") -End (Get-Date).AddDays($DaysAgo)).TotalSeconds
+}
+
 function Parse-AcceloUrl {
     param (
-        $Url = "https://provisionsgroup.accelo.com/?action=view_task&id=15221"
+        [ValidateScript({$_ -match "view_task"})]
+        $Url = "https://provisionsgroup.accelo.com/?action=view_task&id=18281",
+
+        $DaysAgo = $(Get-EpochDate -DaysAgo 30)
     )
     $Headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
     $Path = $Url.Split("https://$DeploymentSubdomain.accelo.com")[1]
@@ -549,46 +601,12 @@ function Parse-AcceloUrl {
 
     $Response = Invoke-RestMethod "$BaseUri/tasks?_bearer_token=$BearerToken&_search=$Company`
                 &_fields=id,title,against,assignee,task_status`
-                &_filters=date_modified_after=(1696016228),id($Id)" -Method 'GET' -Headers $Headers
+                &_filters=date_modified_after=($DaysAgo),id($Id)" -Method 'GET' -Headers $Headers
     if ($Response.Meta.Status -ne "ok") {
         Write-Error "Response Status: $($Response.Meta.Status)`n`tMessage: $($Response.Meta.Message)`n`tLink: $($Response.Meta.More_Info)"
     }
 
     return $Response
-}
-
-function  Expand-Abbreviation {
-    param (
-        [string]
-        $Abbreviation = ""
-    )
-    $AbbreviationList = @{
-        CMHOF = "Country Music Hall of Fame"
-        DH = "Decode Health"
-        FF = "First Farmers"
-        FP = "Fast Pace"
-        GC = "GenesisCare"
-        HMG = "Honest Medical Group"
-        IP = "IntegraPark"
-        NP = "Neural Payments"
-        NSC = "National Safety Council"
-        OH = "Objective Health"
-        OJ = "Objective Health"
-        OLC = "Online Learning Consortium"
-        PCTEL = "PCTEL"
-        PFC = "ProCreate Fertility Clinic"
-        PG = "Provisions Group"
-        'S&J' = "Steptoe & Johnson"
-        SC = "Skin Clique"
-        SJ = "Steptoe & Johnson"
-        SOS= "Store Opening Solutions"
-        SP = "Surgery Partners"
-        VA = "V. Alexander"
-    }
-    #Write-Host "ABBREVIATION: $Abbreviation"
-    $Expansion = $AbbreviationList[$Abbreviation]
-    
-    return $Expansion
 }
 
 function Create-AcceloActivity {

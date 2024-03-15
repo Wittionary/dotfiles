@@ -324,7 +324,10 @@ function Parse-DailyNoteLine{
 
         # Determine which Accelo ticket it might go towards
         # $Task.AcceloTicket = Get-AcceloTicketOptions -Description "$($Task.Title) $($Task.Notes)"
-        $Task.AcceloTicket = Get-NotePropertyValue -NotePath $(Get-NoteLocation -NoteName $($Task.Filename)) -Property "URL"
+        $Task.AcceloTicket = Parse-AcceloUrl -Url $(
+                                Convert-MarkdownLinkToUrl -MarkdownLink $(Get-NotePropertyValue -NotePath $(Get-NoteLocation -NoteName $($Task.Filename)) -Property "URL")
+                            )
+        
         
         # Get "Client" property from linked notes
         if ($Task.Status -eq "incomplete") {
@@ -586,6 +589,17 @@ function Get-EpochDate {
     $DaysAgo = $DaysAgo * -1 
 
     return [int](New-TimeSpan -Start (Get-Date "01/01/1970") -End (Get-Date).AddDays($DaysAgo)).TotalSeconds
+}
+
+function Convert-MarkdownLinkToUrl {
+    param (
+        $MarkdownLink
+    )
+
+    $Url = $MarkdownLink.split("]",2)[1] # split into 2 element, take parens half
+    $Url = $Url.Trim("()") # remove parens
+
+    return $Url
 }
 
 function Parse-AcceloUrl {

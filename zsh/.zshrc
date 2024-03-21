@@ -152,6 +152,7 @@ fi
 # STATIC VARIABLES -------------------------
 export GOPATH=$HOME/go
 export PATH=$PATH:$GOPATH/bin
+export PATH=$PATH:$GIT_PATH/add-thing
 
 
 # vi mode

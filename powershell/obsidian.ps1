@@ -224,7 +224,7 @@ function Process-DailyNote {
     Write-Host " tasks for $($Date | Get-Date -Format dddd), $($Date | Get-Date -Format 'MMMM dd')"
     foreach ($Task in $Tasks) {
         if ($Debug) { Write-Host "Task: $($Task.Title)"}
-        Display-DailyNoteTask -Task $Task
+        Display-DailyNoteTask -Task $Task -Index $Tasks.IndexOf($Task)
     }
     
 }
@@ -324,9 +324,15 @@ function Parse-DailyNoteLine{
 
         # Determine which Accelo ticket it might go towards
         # $Task.AcceloTicket = Get-AcceloTicketOptions -Description "$($Task.Title) $($Task.Notes)"
-        $Task.AcceloTicket = Parse-AcceloUrl -Url $(
-                                Convert-MarkdownLinkToUrl -MarkdownLink $(Get-NotePropertyValue -NotePath $(Get-NoteLocation -NoteName $($Task.Filename)) -Property "URL")
-                            )
+        $UrlProperty = Get-NotePropertyValue -NotePath $(Get-NoteLocation -NoteName $($Task.Filename)) -Property "URL"
+        if ($Url) {
+            $Task.AcceloTicket = Parse-AcceloUrl -Url $(
+                Convert-MarkdownLinkToUrl -MarkdownLink $UrlProperty
+            )
+        } else {
+            $Task.AcceloTicket = ""
+        }
+      
         
         
         # Get "Client" property from linked notes
@@ -392,7 +398,9 @@ function Display-DailyNoteTask{
             Mandatory=$true,
             Position=0
         )]
-        $Task
+        $Task,
+
+        $Index
     )
 
     if ($Task.Status -eq "complete") {
@@ -400,26 +408,60 @@ function Display-DailyNoteTask{
     } elseif ($Task.Status -eq "incomplete") {
         $ForegroundColor = "Yellow"
     }
+
+    # ghetto check for if it's got an Obsidian link
+    # I've already done this elsewhere. Needs refactor.
+    if ($Task.Title -match "\[\[") {
+        $DisplayTitle = $($Task.Title).split(" ", 2)[1].TrimEnd("]]")
+    } else {
+        $DisplayTitle = $Task.Title
+    }
     
-    Write-Host "$($Task.Title) --> " -NoNewline
+    $ColumnGapSize = 3
+    $GapOffsetSize = 48
+    if ($DisplayTitle.Length -le $GapOffsetSize) {
+        $GapOffsetSize = $GapOffsetSize - $DisplayTitle.Length
+    } else {
+        # no gap; smash 'em together
+        $GapOffsetSize = 0
+    }
+
+    $ColumnChar = ""
+    if ($Index % 2 -eq 0) {
+        $ColumnChar = " "
+    } elseif ($Index % 2 -eq 1) {
+        $ColumnChar = "-"
+    }
+
+    $FirstGap = ""
+    for ($i = 0; $i -lt ($ColumnGapSize + $GapOffsetSize); $i++){
+        $FirstGap = "$FirstGap$ColumnChar"
+    }
+
+    $ColumnGap = ""
+    for ($i = 0; $i -lt ($ColumnGapSize); $i++){
+        $ColumnGap = "$ColumnGap$ColumnChar"
+    }
+    
+    Write-Host "${DisplayTitle} ${FirstGap} " -NoNewline
     #Write-Host "$($Task.CumulativeTime.Hours) hours $($Task.CumulativeTime.Minutes) minutes " -ForegroundColor Blue -NoNewline
-    Write-Host "$($Task.CumulativeRoundedTime.Hours) hours $($Task.CumulativeRoundedTime.Minutes) minutes " -ForegroundColor $ForegroundColor -NoNewline
+    Write-Host "$($Task.CumulativeRoundedTime.Hours) hours $($Task.CumulativeRoundedTime.Minutes) minutes $ColumnGap " -ForegroundColor $ForegroundColor -NoNewline
     if ($Task.RoundedMinutesOffset -ge 0) {
-        Write-Host "$($PSStyle.Italic)+$($Task.RoundedMinutesOffset)$($PSStyle.ItalicOff) " -ForegroundColor Blue -NoNewline
+        Write-Host "$($PSStyle.Italic)+$($Task.RoundedMinutesOffset)$($PSStyle.ItalicOff) $ColumnGap " -ForegroundColor Blue -NoNewline
     } else {
         # it's negative
-        Write-Host "$($PSStyle.Italic)$($Task.RoundedMinutesOffset)$($PSStyle.ItalicOff) " -ForegroundColor Red -NoNewline
+        Write-Host "$($PSStyle.Italic)$($Task.RoundedMinutesOffset)$($PSStyle.ItalicOff) $ColumnGap " -ForegroundColor Red -NoNewline
     }
 
     # Ticket/task details
-    Write-Host "        (CLIENT: " -NoNewline
+    Write-Host "[CLIENT: " -NoNewline
     if (("unknown" -eq $Task.Client) -or ("" -eq $Task.Client)) {
         # client is not confirmed
-        Write-Host "$($Task.Client)" -ForegroundColor Yellow -NoNewline
+        Write-Host "$($Task.Client) $ColumnGap " -ForegroundColor Yellow -NoNewline
     } else {
-        Write-Host "$($Task.AcceloCompany.name) ($($Task.AcceloCompany.id))" -NoNewline
+        Write-Host "$($Task.AcceloCompany.name) ($($Task.AcceloCompany.id)) $ColumnGap " -NoNewline
     }
-    Write-Host ";)"
+    Write-Host "]"
     
 }
 
@@ -593,8 +635,14 @@ function Get-EpochDate {
 
 function Convert-MarkdownLinkToUrl {
     param (
+        [string]
+        #[ValidateScript({$_ -match "\[.*\]\(.*\)"})]
         $MarkdownLink
     )
+
+    if ($MarkdownLink -notmatch "\[.*\]\(.*\)") {
+        return ""
+    }
 
     $Url = $MarkdownLink.split("]",2)[1] # split into 2 element, take parens half
     $Url = $Url.Trim("()") # remove parens

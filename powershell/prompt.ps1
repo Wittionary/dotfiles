@@ -26,7 +26,18 @@ function prompt {
 
     if (Test-IsGitRepo) {
         Write-Host " $Time" @Section1
-        Write-Host " $(Get-GitCheckedOutBranch)($(Get-GitNumberOfBranches))" @Section2
+
+        $GitBranch = Get-GitCheckedOutBranch
+        # for long branch names
+        if ($GitBranch.Length -gt 26) {
+            # assumes a "/" in branch name
+            $Temp1 = $GitBranch.Split("/")[0]
+            $Temp2 = $GitBranch.Split("/")[1].Substring(0,5)
+            $Temp3 = $GitBranch.Split("/")[1].Substring((($GitBranch.Split("/")[1].Length) - 5),5) # start count from near the end of the string
+
+            $GitBranch = "$Temp1/$Temp2..$Temp3"
+        }
+        Write-Host " $GitBranch($(Get-GitNumberOfBranches))" @Section2
     } else {
         Write-Host " $ENV:USERNAME" @Section1
         Write-Host " $ENV:COMPUTERNAME" @Section2

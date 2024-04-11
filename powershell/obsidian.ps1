@@ -454,14 +454,14 @@ function Display-DailyNoteTask{
     }
 
     # Ticket/task details
-    Write-Host "[CLIENT: " -NoNewline
+    Write-Host "[ " -NoNewline
     if (("unknown" -eq $Task.Client) -or ("" -eq $Task.Client)) {
         # client is not confirmed
-        Write-Host "$($Task.Client) $ColumnGap " -ForegroundColor Yellow -NoNewline
+        Write-Host "$($Task.Client)" -ForegroundColor Yellow -NoNewline
     } else {
-        Write-Host "$($Task.AcceloCompany.name) ($($Task.AcceloCompany.id)) $ColumnGap " -NoNewline
+        Write-Host "$($Task.AcceloCompany.name) ($($Task.AcceloCompany.id))" -NoNewline
     }
-    Write-Host "]"
+    Write-Host " ]"
     
 }
 

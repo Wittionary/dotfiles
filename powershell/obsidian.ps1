@@ -549,6 +549,7 @@ function  Expand-Abbreviation {
         $Abbreviation = ""
     )
     $AbbreviationList = @{
+        AMP = "AMP"
         CMHOF = "Country Music Hall of Fame"
         DH = "Decode Health"
         FF = "First Farmers"
@@ -564,6 +565,7 @@ function  Expand-Abbreviation {
         PCTEL = "PCTEL"
         PFC = "ProCreate Fertility Clinic"
         PG = "Provisions Group"
+        PW = "PrintsWell"
         'S&J' = "Steptoe & Johnson"
         SC = "Skin Clique"
         SJ = "Steptoe & Johnson"

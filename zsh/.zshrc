@@ -147,6 +147,9 @@ elif [[ $(cat /etc/hostname) == "ubuntu-wsl" ]]; then
 elif [[ $(cat /etc/hostname) == "hacktop" ]]; then
     # when on linux laptop
     GIT_PATH=/home/witt/git
+elif [[ $(cat /etc/hostname) == "snowmachine" ]]; then
+    # when on linux laptop
+    GIT_PATH=/home/witt/git
 fi
 
 # STATIC VARIABLES -------------------------

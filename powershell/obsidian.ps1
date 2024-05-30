@@ -571,6 +571,7 @@ function  Expand-Abbreviation {
         SJ = "Steptoe & Johnson"
         SOS= "Store Opening Solutions"
         SP = "Surgery Partners"
+        SWFC = "Southwestern Family of Companies"
         VA = "V. Alexander"
     }
     #Write-Host "ABBREVIATION: $Abbreviation"

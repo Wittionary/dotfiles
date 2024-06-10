@@ -555,6 +555,7 @@ function  Expand-Abbreviation {
         FF = "First Farmers"
         FP = "Fast Pace"
         GC = "GenesisCare"
+        HFA = "Hope4America"
         HMG = "Honest Medical Group"
         IP = "IntegraPark"
         NP = "Neural Payments"
@@ -572,6 +573,7 @@ function  Expand-Abbreviation {
         SOS= "Store Opening Solutions"
         SP = "Surgery Partners"
         SWFC = "Southwestern Family of Companies"
+        UDP = "United Derm Partners"
         VA = "V. Alexander"
     }
     #Write-Host "ABBREVIATION: $Abbreviation"

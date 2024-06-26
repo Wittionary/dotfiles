@@ -30,12 +30,14 @@ function prompt {
         $GitBranch = Get-GitCheckedOutBranch
         # for long branch names
         if ($GitBranch.Length -gt 26) {
+            # TODO: if "/" then...
             # assumes a "/" in branch name
             $Temp1 = $GitBranch.Split("/")[0]
             $Temp2 = $GitBranch.Split("/")[1].Substring(0,5)
             $Temp3 = $GitBranch.Split("/")[1].Substring((($GitBranch.Split("/")[1].Length) - 5),5) # start count from near the end of the string
 
             $GitBranch = "$Temp1/$Temp2..$Temp3"
+            # TODO: else shorten it
         }
         Write-Host " $GitBranch($(Get-GitNumberOfBranches))" @Section2
     } else {

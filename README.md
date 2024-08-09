@@ -3,7 +3,7 @@ _Originally and shamelessly copied from [@holman](https://github.com/holman/dotf
 
 Your dotfiles are how you personalize your system. These are mine.
 
-Zach Holman has an interesting [post](http://zachholman.com/2010/08/dotfiles-are-meant-to-be-forked/) on dotfiles if you're new to them. (I sure am!).
+Zach Holman has an interesting [post](http://zachholman.com/2010/08/dotfiles-are-meant-to-be-forked/) on dotfiles if you're new to them.
 
 ## topical
 
@@ -19,6 +19,8 @@ _Who knows?_
 use, and build on what you do.
 
 ## install
+- clone dotfiles repo
+- ensure `$env:git` and `$GIT_PATH` are set
 
 ### quick zsh setup
 - [ ] TODO: Update this. This is outdated. I think.
@@ -26,6 +28,12 @@ use, and build on what you do.
 # Overwrites existing .zshrc
 mv ~/.zshrc ~/.zshrc.bak;curl -fsSL https://raw.githubusercontent.com/Wittionary/dotfiles/main/zsh/.zshrc --output ~/.zshrc;source ~/.zshrc
 ```
+### windows setup
+- espanso/_setup.ps1
+- git/_setup.ps1
+- powershell/_setup.ps1
+- windows-terminal/_setup.ps1
+- Coming soon: run setup-windows.ps1
 
 ## thanks
 

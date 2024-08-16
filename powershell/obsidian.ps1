@@ -700,4 +700,4 @@ function Create-AcceloActivity {
 
 $DeploymentSubdomain = "provisionsgroup"
 $BaseUri = "https://$DeploymentSubdomain.api.accelo.com/api/v0"
-$BearerToken = Get-AcceloToken # comment out while not in active use
+#$BearerToken = Get-AcceloToken # comment out while not in active use

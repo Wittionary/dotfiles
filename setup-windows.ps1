@@ -24,6 +24,20 @@ if ($PSCommandPath -like "$env:git\dotfiles\*") {
 }
 
 # enumerate all _setup.ps1 scripts
-# run them
+$SetupScripts = Get-ChildItem -Path . -Name "_setup.ps1" -Recurse
+$Jobs = @()
+foreach ($SetupScript in $SetupScripts) {
+    # run them
+    $Jobs += Start-Job -ScriptBlock {
+        & pwsh -file ".\$SetupScript"
+    }
+}
+
+foreach ($Job in $Jobs) {
+    $ChildJob = Get-Job -id $Job.ChildJobs.Id
+    Write-Output "----------- JOB $($ChildJob.Id)
+    OUTPUT:`n`t$($ChildJob.Output)
+    ERROR:`n`t$($ChildJob.Error)"
+}
 
 # give a pretty output of what ran successfully and what didn't

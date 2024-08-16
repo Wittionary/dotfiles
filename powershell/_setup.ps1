@@ -1,1 +1,1 @@
-Copy-Item -Path Profile.ps1 -Destination $PsHome -Force
+Copy-Item -Path $env:git\dotfiles\powershell\Profile.ps1 -Destination $PsHome -Force

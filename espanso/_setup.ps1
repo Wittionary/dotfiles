@@ -5,3 +5,4 @@ if (Test-Path $SettingsOriginal) {
 }
 New-Item -Path $SettingsOriginal -ItemType SymbolicLink -Value $env:git\dotfiles\espanso
 
+# restart espanso?

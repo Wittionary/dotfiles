@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 
 # Test if git repo env var is set

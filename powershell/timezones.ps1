@@ -9,11 +9,11 @@ function tz {
 
     $DatetimeTemp = $null
     if ($PSCmdlet.ParameterSetName -eq "StringSet") {
-        $formats = @("hhtt", "htt", "hh:mmt", "HH:mm", "HHmm")
+        $Formats = @("hhtt", "hht", "htt", "hh:mmt", "HH:mm", "HHmm")
         
-        foreach ($format in $formats) {
+        foreach ($Format in $Formats) {
             try {
-                $DatetimeTemp = [datetime]::ParseExact($Time, $format, $null)
+                $DatetimeTemp = [datetime]::ParseExact($Time, $Format, $null)
                 Write-Host "$DatetimeTemp"
                 break
             } catch {

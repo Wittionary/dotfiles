@@ -67,13 +67,32 @@ if [ "$repo_exists" = true ]; then
     fi
 
     # WSL ---------------------------------------------------------
-    # wsl.config
+    # TODO: DRY this up
+    # wsl.conf
+    # if file exists and isn't a symlink
     if [[ -f /etc/wsl.conf && ! ( -L /etc/wsl.conf ) ]]; then
         sudo rm -v /etc/wsl.conf
     elif [[ -L /etc/wsl.conf ]]; then
         echo "/etc/wsl.conf is already symlinked"
     else
         ln -s -v $GIT_PATH/dotfiles/wsl/ubuntu-wsl.conf /etc/wsl.conf && echo "/etc/wsl.conf is now a symlink"
-        ln -s -v $GIT_PATH/dotfiles/wsl/resolv.conf /etc/resolv.conf && echo "/etc/resolv.conf is now a symlink"
+    fi
+
+    # resolv.conf
+    if [[ -f /etc/resolv.conf && ! ( -L /etc/resolv.conf ) ]]; then
+        sudo rm -v /etc/resolv.conf
+    elif [[ -L /etc/resolv.conf ]]; then
+        echo "/etc/resolv.conf is already symlinked"
+    else
+        sudo ln -s -v $GIT_PATH/dotfiles/wsl/resolv.conf /etc/resolv.conf && echo "/etc/resolv.conf is now a symlink"
+    fi
+
+    # change the default shell to zsh
+    DESIRED_SHELL=zsh
+    if [[ $(cat /etc/shells | grep "$DESIRED_SHELL") ]]; then
+        chsh -s $(which $DESIRED_SHELL) witt
+        echo "Shell changed to $(which $DESIRED_SHELL)"
+    else
+        echo "$DESIRED_SHELL not found in /etc/shells"
     fi
 fi

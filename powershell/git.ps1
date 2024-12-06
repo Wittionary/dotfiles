@@ -41,6 +41,10 @@ function g {
         & git log
     } elseif ($CommandSequence -eq "ch") {
         # Checkout
+        if ($String -ne "") {
+            git checkout $String
+        }
+        
         # TODO: test for existance of fzf
         & git checkout $(
                 git branch --list | 

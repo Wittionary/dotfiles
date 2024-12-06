@@ -43,14 +43,14 @@ function g {
         # Checkout
         if ($String -ne "") {
             git checkout $String
+        } else {
+            # TODO: test for existance of fzf
+            & git checkout $(
+                    git branch --list | 
+                    Where-Object {$_ -notmatch "\*"} | # everything but the currently selected branch
+                    ForEach-Object {$_.trim()} | fzf --height 25% --layout=reverse
+                )
         }
-        
-        # TODO: test for existance of fzf
-        & git checkout $(
-                git branch --list | 
-                Where-Object {$_ -notmatch "\*"} | # everything but the currently selected branch
-                ForEach-Object {$_.trim()} | fzf --height 25% --layout=reverse
-            )
     }
 }
 

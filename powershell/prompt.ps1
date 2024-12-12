@@ -42,7 +42,7 @@ function prompt {
                 $GitBranch = "..."
             }
         }
-        Write-Host " $GitBranch($(Get-GitNumberOfBranches))" @Section2
+        Write-Host " $($PSStyle.Italic)$GitBranch($(Get-GitNumberOfBranches))$($PSStyle.ItalicOff)" @Section2
     } else {
         Write-Host " $ENV:USERNAME" @Section1
         Write-Host " $ENV:COMPUTERNAME" @Section2

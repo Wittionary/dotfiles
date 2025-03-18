@@ -14,6 +14,10 @@ function g {
         & git branch --list
     } elseif ($CommandSequence -eq "p") {
         & git pull
+    } elseif ($CommandSequence -eq "cm") {
+        # Commit with a message
+        $CommitMessage = $String
+        & git commit -m $CommitMessage
     } elseif ($CommandSequence -eq "can") {
         # Commit all now; maybe add auto-push later
         & git add .

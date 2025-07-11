@@ -34,7 +34,7 @@ function tz {
         @{ name = "Atlantic Standard Time"; displayname = "AST"; enabled = $false } # -4
         @{ name = "UTC"; displayname = "UTC"; enabled = $false } # +0
         @{ name = "GMT Standard Time"; displayname = "GMT"; enabled = $false } # +0
-        @{ name = "W. Europe Standard Time"; displayname = "WEST"; enabled = $false } # +1 - London
+        @{ name = "W. Europe Standard Time"; displayname = "WEST"; enabled = $true } # +1 - London
         @{ name = "Central European Standard Time"; displayname = "CEST"; enabled = $false } # +1
         @{ name = "E. Europe Standard Time"; displayname = "EEST"; enabled = $false } # +2
     )

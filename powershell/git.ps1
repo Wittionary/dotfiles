@@ -86,3 +86,13 @@ function Test-IsGitRepo {
     }
     return $false
 }
+
+function Switch-Repository {
+    Set-Location $(
+        Get-ChildItem -Path $env:git -Recurse -Directory |
+        Where-Object { Test-Path "$($_.FullName)\.git" } |
+        Select-Object -ExpandProperty FullName |
+        fzf --exact --height 25% --layout=reverse --header="REPOS"
+    )
+}
+Set-Alias -Name "cr" -Value "Switch-Repository"

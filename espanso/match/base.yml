@@ -83,7 +83,7 @@ matches:
         type: shell
         params:
           # Remove ticket ID, separate client name from project description
-          cmd: try { $(Get-Clipboard -raw).Split("-")[1].trim().Split(" ")[0] + $(Get-Clipboard -raw).Split("-")[1].trim().Split(" ")[1..($(Get-Clipboard -raw).Split("-")[1].trim().Split(" ").Length)] } catch { $(Get-Clipboard -raw) }
+          cmd: $(Get-Clipboard -raw) # try { $(Get-Clipboard -raw).Split("-")[1].trim().Split(" ")[0] + $(Get-Clipboard -raw).Split("-")[1].trim().Split(" ")[1..($(Get-Clipboard -raw).Split("-")[1].trim().Split(" ").Length)] } catch { $(Get-Clipboard -raw) }
           shell: powershell
       - name: note_path_encoded
         type: shell

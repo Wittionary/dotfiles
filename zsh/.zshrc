@@ -61,6 +61,8 @@ g() { # git aliases/chords
         git branch --list
     elif [[ "$1" == "p" ]]; then
         git pull
+    elif [[ "$1" == "cm" ]]; then
+        git commit -m $2
     elif [[ "$1" == "can" ]]; then
         # Commit all now
         git add .
@@ -135,6 +137,16 @@ whereami() { # determine which cloud provider and kubernetes' contexts I'm under
 settitle() { # Set terminal window/tab title with argument
     window_title=$(history -1 | cut -d ' ' -f 4-)
     echo -ne '\033]0;'"${window_title}"'\a'
+}
+
+cr() { # change repo / switch repo
+    local selected
+    selected=$(
+        find "$GIT_PATH" -type d -name ".git" |
+        sed 's/\/.git$//' |
+        fzf --exact --height 25% --layout=reverse --header="REPOS"
+    )
+    [[ -n "$selected" ]] && cd "$selected"
 }
 
 # HOOKS ---------------------------

@@ -1,14 +1,14 @@
-#!/usr/bin/bash
+#!/bin/bash
 set -e
 
 
 # Test if git repo env var is set
 # If not, set it
-if [[ -v GIT_PATH || -n $GIT_PATH ]]; then
+if [[ -n $GIT_PATH ]]; then
     echo '$GIT_PATH is set'
 else 
     echo 'Enter a value for $GIT_PATH : '
-    read input
+    read -r input
     export GIT_PATH=$input
     echo "\$GIT_PATH is now $GIT_PATH"
 fi
@@ -32,16 +32,16 @@ if [ "$repo_exists" = true ]; then
     elif [[ -L ~/.zshrc ]]; then
         echo "~/.zshrc is already symlinked"
     else
-        ln -s -v $GIT_PATH/dotfiles/zsh/.zshrc ~/.zshrc && echo "~/.zshrc is now a symlink"
+        ln -s -v "$GIT_PATH/dotfiles/zsh/.zshrc" ~/.zshrc && echo "~/.zshrc is now a symlink"
     fi
 
     # .zshenv
-    if [[ -f ~/.zshenv && !( -L ~/.zshenv) ]]; then
+    if [[ -f ~/.zshenv && ! ( -L ~/.zshenv) ]]; then
         rm -v ~/.zshenv
     elif [[ -L ~/.zshenv ]]; then
         echo "~/.zshenv is already symlinked"
     else
-        ln -s $GIT_PATH/dotfiles/zsh/.zshenv ~/.zshenv && echo "~/.zshenv is now a symlink"
+        ln -s "$GIT_PATH/dotfiles/zsh/.zshenv" ~/.zshenv && echo "~/.zshenv is now a symlink"
     fi
 
     # VIM ---------------------------------------------------------
@@ -51,7 +51,7 @@ if [ "$repo_exists" = true ]; then
     elif [[ -L ~/.vimrc ]]; then
         echo "~/.vimrc is already symlinked"
     else
-        ln -s -v $GIT_PATH/dotfiles/vim/.vimrc ~/.vimrc && echo "~/.vimrc is now a symlink"
+        ln -s -v "$GIT_PATH/dotfiles/vim/.vimrc" ~/.vimrc && echo "~/.vimrc is now a symlink"
     fi
 
     # vim theme
@@ -63,10 +63,14 @@ if [ "$repo_exists" = true ]; then
     elif [[ -L ~/.vim/colors/codedark.vim ]]; then
         echo "~/.vim/colors/codedark.vim is already symlinked"
     else
-        ln -s -v $GIT_PATH/dotfiles/vim/colors/codedark.vim ~/.vim/colors/codedark.vim && echo "~/.vim/colors/codedark.vim is now a symlink"
+        ln -s -v "$GIT_PATH/dotfiles/vim/colors/codedark.vim" ~/.vim/colors/codedark.vim && echo "~/.vim/colors/codedark.vim is now a symlink"
     fi
 
     # WSL ---------------------------------------------------------
+    if [[ $(uname -o) == "Darwin" ]]; then
+        echo "Running on macOS, skipping WSL configuration"
+        exit 0
+    fi
     # TODO: DRY this up
     # wsl.conf
     # if file exists and isn't a symlink
@@ -75,7 +79,7 @@ if [ "$repo_exists" = true ]; then
     elif [[ -L /etc/wsl.conf ]]; then
         echo "/etc/wsl.conf is already symlinked"
     else
-        ln -s -v $GIT_PATH/dotfiles/wsl/ubuntu-wsl.conf /etc/wsl.conf && echo "/etc/wsl.conf is now a symlink"
+        ln -s -v "$GIT_PATH/dotfiles/wsl/ubuntu-wsl.conf" /etc/wsl.conf && echo "/etc/wsl.conf is now a symlink"
     fi
 
     # resolv.conf

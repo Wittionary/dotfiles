@@ -156,21 +156,23 @@ _comp_options+=(globdots)		# Include hidden files.
 source <(kubectl completion zsh) # kubectl completion
 
 # DYNAMIC VARIABLES -------------------------
+if [[ $(hostname) == "HK4YD7GT79" ]]; then
+    export GIT_PATH=$HOME/git
 if [[ $(cat /etc/hostname) == "Monolith" ]]; then
     # when on Monolith
-    GIT_PATH=/mnt/c/Users/Witt/Documents/GitHub
+    export GIT_PATH=/mnt/c/Users/Witt/Documents/GitHub
 elif [[ $(cat /etc/hostname) == "STARMACHINE" ]]; then
     # when on STARMACHINE
-    GIT_PATH=/mnt/c/Users/qwert/Documents/git
+    export GIT_PATH=/mnt/c/Users/qwert/Documents/git
 elif [[ $(cat /etc/hostname) == "ubuntu-wsl" ]]; then
     # when on work laptop
-    GIT_PATH=/mnt/c/Users/WittAllen/git
+    export GIT_PATH=/mnt/c/Users/WittAllen/git
 elif [[ $(cat /etc/hostname) == "hacktop" ]]; then
     # when on linux laptop
-    GIT_PATH=/home/witt/git
+    export GIT_PATH=/home/witt/git
 elif [[ $(cat /etc/hostname) == "snowmachine" ]]; then
     # when on linux laptop
-    GIT_PATH=/home/witt/git
+    export GIT_PATH=/home/witt/git
 fi
 
 # STATIC VARIABLES -------------------------
@@ -188,19 +190,22 @@ export KEYTIMEOUT=1
 
 
 # https://github.com/zsh-users/zsh-autosuggestions
-source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh 2>/dev/null
+source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+
 
 # https://github.com/wting/autojump
-source /usr/share/autojump/autojump.sh
+source /usr/share/autojump/autojump.sh 2>/dev/null
 
 # Load zsh-syntax-highlighting; should be last.
 # https://github.com/zsh-users/zsh-syntax-highlighting
 source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh 2>/dev/null
+source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh 2>/dev/null
 # add Pulumi to the PATH
 export PATH=$PATH:$HOME/.pulumi/bin
 
 # bun completions
-[ -s "/home/witt/.bun/_bun" ] && source "/home/witt/.bun/_bun"
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
 # bun
 export BUN_INSTALL="$HOME/.bun"

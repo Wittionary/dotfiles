@@ -166,11 +166,12 @@ zmodload zsh/complist
 compinit
 _comp_options+=(globdots)		# Include hidden files.
 source <(kubectl completion zsh) # kubectl completion
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun" # bun completions
 
 # DYNAMIC VARIABLES -------------------------
 if [[ $(hostname) == "HK4YD7GT79" ]]; then
     export GIT_PATH=$HOME/git
-if [[ $(cat /etc/hostname) == "Monolith" ]]; then
+elif [[ $(cat /etc/hostname) == "Monolith" ]]; then
     # when on Monolith
     export GIT_PATH=/mnt/c/Users/Witt/Documents/GitHub
 elif [[ $(cat /etc/hostname) == "STARMACHINE" ]]; then
@@ -199,6 +200,10 @@ export KEYTIMEOUT=1
 
 # autosuggestion - accept next word
 #bindkey '^[[1;5C' forward-word # Ctrl + Right
+# PATH changes
+export PATH=$PATH:$HOME/.pulumi/bin
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
 
 
 # https://github.com/zsh-users/zsh-autosuggestions
@@ -213,12 +218,3 @@ source /usr/share/autojump/autojump.sh 2>/dev/null
 # https://github.com/zsh-users/zsh-syntax-highlighting
 source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh 2>/dev/null
 source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh 2>/dev/null
-# add Pulumi to the PATH
-export PATH=$PATH:$HOME/.pulumi/bin
-
-# bun completions
-[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
-
-# bun
-export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"

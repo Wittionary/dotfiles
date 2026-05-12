@@ -43,7 +43,8 @@ setopt INTERACTIVE_COMMENTS # don't process '#' in the terminal
 
 # ALIASES ---------------------------
 alias cls=clear
-alias d=docker
+alias d=podman
+alias docker=podman
 alias tf=terraform
 alias tg=terragrunt
 #alias kc=kubectl

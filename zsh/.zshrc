@@ -97,6 +97,23 @@ g() { # git aliases/chords
             )
 
         fi
+    elif [[ "$1" == "wt" ]]; then
+        if [[ "$2" == "ch" ]]; then
+            # Jump to a worktree
+            local selected=$(
+                git worktree list |
+                grep -v "$(pwd)" |
+                awk '{print $1}' |
+                sed "s|$GIT_PATH/||" |
+                fzf --height 25% --layout=reverse
+            )
+            [[ -n "$selected" ]] && cd "$GIT_PATH/$selected"
+        else
+            # List worktrees (g wt or g wt ls)
+            git worktree list |
+            awk '{print $1}' |
+            sed "s|$GIT_PATH/||"
+        fi
     fi
 }
 kc() { # kubectl but as a rainbow

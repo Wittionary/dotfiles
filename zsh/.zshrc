@@ -63,12 +63,12 @@ g() { # git aliases/chords
     elif [[ "$1" == "p" ]]; then
         git pull
     elif [[ "$1" == "cm" ]]; then
-        git commit -m $2
+        git commit -m "$2"
     elif [[ "$1" == "can" ]]; then
         # Commit all now
         git add .
-        CommitMessage = "Commit All @ $(date +%m-%d-%y) $(date +%H:%M:%S)"
-        git commit -am $CommitMessage
+        CommitMessage="Commit All @ $(date +%m-%d-%y) $(date +%H:%M:%S)"
+        git commit -am "$CommitMessage"
     elif [[ "$1" == "ca" ]]; then
         git add .
         git commit -am $2
@@ -90,11 +90,11 @@ g() { # git aliases/chords
         if [[ "$2" != "" ]]; then
             git checkout $2
         else
-            git checkout $(
-                git branch --list | 
+            git checkout "$(
+                git branch --list |
                 grep -v "\*" | # everything but the currently selected branch
                 sed 's/^[ \t]*//;s/[ \t]*$//' | fzf --height 25% --layout=reverse
-            )
+            )"
 
         fi
     elif [[ "$1" == "wt" ]]; then
@@ -102,22 +102,20 @@ g() { # git aliases/chords
             # Jump to a worktree
             local selected=$(
                 git worktree list |
-                grep -v "$(pwd)" |
                 awk '{print $1}' |
                 sed "s|$GIT_PATH/||" |
-                fzf --height 25% --layout=reverse
+                fzf --header="WORKTREES"
             )
-            [[ -n "$selected" ]] && cd "$GIT_PATH/$selected"
+            [[ -n "$selected" ]] && cd "$GIT_PATH/$selected" || return
         else
             # List worktrees (g wt or g wt ls)
             git worktree list |
-            awk '{print $1}' |
             sed "s|$GIT_PATH/||"
         fi
     fi
 }
 kc() { # kubectl but as a rainbow
-    # this breaks when used with `edit` actions because of the pager. 
+    # this breaks when used with `edit` actions because of the pager.
     # Use regular `kubectl` in those cases.
     kubectl $@ | lolcat --freq=0.3
 }
@@ -127,28 +125,28 @@ fsearch() { # Fuzzy search w/ file contents preview
 }
 
 get-aksconfig() {
-    az aks get-credentials --resource-group $RANDOM_PET-rg --name $RANDOM_PET-aks --file kubeconfig --subscription 9ea62c4f-c45c-4e53-814e-96f6ad317ce6
+    az aks get-credentials --resource-group "$RANDOM_PET-rg" --name "$RANDOM_PET-aks" --file kubeconfig --subscription 9ea62c4f-c45c-4e53-814e-96f6ad317ce6
     mv kubeconfig ~/.kube/config
     chmod 600 ~/.kube/config
 }
 
 whereami() { # determine which cloud provider and kubernetes' contexts I'm under and display
     # AZ CLI
-    if [[ -z $(history | grep --perl-regexp '^\s{1,2}\d{1,4}\s{2}az\s.*') ]]; then 
-        # az command has not run recently 
+    if [[ -z $(history | grep --perl-regexp '^\s{1,2}\d{1,4}\s{2}az\s.*') ]]; then
+        # az command has not run recently
         active_acct_az=""
-    else 
+    else
         active_acct_az=$(az account show -o tsv --query name | cut -c 1-13)
     fi
 
     # KUBECTL
-    if [[ -z $(history | grep --perl-regexp '^\s{1,2}\d{1,4}\s{2}(sudo\s)?(kubectl|kc){1}\s.*$') ]]; then 
-        # kubectl (or alias) has not run recently 
+    if [[ -z $(history | grep --perl-regexp '^\s{1,2}\d{1,4}\s{2}(sudo\s)?(kubectl|kc){1}\s.*$') ]]; then
+        # kubectl (or alias) has not run recently
         active_kube_context=""
-    else 
+    else
         active_kube_context=$(kubectl config current-context)
     fi
-    
+
     source ~/.zshrc
 }
 
@@ -164,7 +162,7 @@ cr() { # change repo / switch repo
         sed 's/\/.git$//' |
         fzf --exact --height 25% --layout=reverse --header="REPOS"
     )
-    [[ -n "$selected" ]] && cd "$selected"
+    [[ -n "$selected" ]] && cd "$selected" || return
 }
 
 # HOOKS ---------------------------

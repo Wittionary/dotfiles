@@ -6,7 +6,7 @@ set -e
 # If not, set it
 if [[ -n $GIT_PATH ]]; then
     echo '$GIT_PATH is set'
-else 
+else
     echo 'Enter a value for $GIT_PATH : '
     read -r input
     export GIT_PATH=$input
@@ -33,6 +33,8 @@ if [ "$repo_exists" = true ]; then
         echo "~/.zshrc is already symlinked"
     else
         ln -s -v "$GIT_PATH/dotfiles/zsh/.zshrc" ~/.zshrc && echo "~/.zshrc is now a symlink"
+        mkdir ~/.cache/zsh
+        touch ~/.cache/zsh/history && echo "history file created"
     fi
 
     # .zshenv

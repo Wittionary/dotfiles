@@ -68,7 +68,7 @@ matches:
   # IT infrastructure and process improvement
   - trigger: ";;sdquestions"
     replace: "Please include answers to the following questions:\n- What's the business reason for this?\n- Have you tried to replicate the issue?\n- What have you tried already?\n- When did this start happening?\n- What error are you getting?\n- How many users are impacted?\n- Do they have a workaround?\n- What is the impact to the user's workflow?"
-  
+
   - trigger: ";;saneit"
     replace: "De-escalate and train.\nDistrust and verify.\nConsider the source. Then go to the source."
 
@@ -80,11 +80,7 @@ matches:
     replace: "[{{note_title}}](obsidian://open?file={{note_path_encoded}})"
     vars:
       - name: note_title
-        type: shell
-        params:
-          # Remove ticket ID, separate client name from project description
-          cmd: $(Get-Clipboard -raw) # try { $(Get-Clipboard -raw).Split("-")[1].trim().Split(" ")[0] + $(Get-Clipboard -raw).Split("-")[1].trim().Split(" ")[1..($(Get-Clipboard -raw).Split("-")[1].trim().Split(" ").Length)] } catch { $(Get-Clipboard -raw) }
-          shell: powershell
+        type: clipboard
       - name: note_path_encoded
         type: shell
         params:
